@@ -4,7 +4,7 @@ const paddle = document.getElementById("paddle");
 const scoreDisplay = document.getElementById("score");
 const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
-
+const gameContainer = document.getElementById("gameContainer");
 // Game Variables
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
@@ -13,7 +13,7 @@ let rightPressed = false,
   leftPressed = false;
 let score = 0;
 let lives = 3;
-let paused = false;
+let paused = true;
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
@@ -23,36 +23,41 @@ const brickPadding = 30;
 let bricks = [];
 
 // Utility Function: Generate Random Colors
-function getRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-
-// Initialize Game State
-function initGame() {
-  ballX = 240;
-  ballY = 290;
-  ballSpeedX = 2;
-  ballSpeedY = -2;
-  paddleX = 200;
-  score = 0;
-  lives = 3;
-  paused = false;
-  createBricks();
-  updateScoreAndLives();
-}
+// function getRandomColor() {
+//   const letters = "0123456789ABCDEF";
+//   let color = "#";
+//   for (let i = 0; i < 6; i++) {
+//     color += letters[Math.floor(Math.random() * 16)];
+//   }
+//   return color;
+// }
 
 function IsWin() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].element.style.display !== "none") return false;
+      if (bricks[c][r].status === 1) return false;
     }
   }
   return true;
+}
+
+function getRandomColor() {
+  const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+// Initialize Game State
+function initGame() {
+  ballX = gameContainer.clientWidth / 2;
+  ballY = gameContainer.clientHeight - 40;
+  ballSpeedX = 2;
+  ballSpeedY = -2;
+  paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
+  console.log(paddleX);
+  paddle.style.left = paddleX + "px";
+  score = 0;
+  createBricks();
+  updateScoreAndLives();
 }
 
 // Create Bricks
@@ -84,8 +89,7 @@ function updateScoreAndLives() {
 function handleKeyDown(e) {
   if (e.key === "ArrowRight") rightPressed = true;
   if (e.key === "ArrowLeft") leftPressed = true;
-  if (e.key === "i") paused = true;
-  if (e.key === "y") paused = false;
+  if (e.key === " ") paused = !paused;
 }
 
 function handleKeyUp(e) {
@@ -132,7 +136,6 @@ function collisionDetection() {
           brick.status = 0;
           score++;
           updateScoreAndLives();
-
           // Increase ball speed slightly for challenge
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
@@ -177,24 +180,25 @@ function playGame() {
         alert("GAME OVER");
         document.location.reload();
       } else {
-        resetBallAndPaddle();
+        paused = true;
+        initGame();
       }
     }
   }
 
   // Paddle Movement
-  if (rightPressed && paddleX < 680 - 100) paddleX += 7;
-  if (leftPressed && paddleX > 0) paddleX -= 7;
+  if (rightPressed && paddleX < 680 - 104) paddleX += 7;
+  if (leftPressed && paddleX > 1) paddleX -= 7;
 }
 
 // Reset Ball and Paddle Position
-function resetBallAndPaddle() {
-  ballX = 240;
-  ballY = 290;
-  ballSpeedX = 2;
-  ballSpeedY = -2;
-  paddleX = 200;
-}
+// function resetBallAndPaddle() {
+//   ballX = 240;
+//   ballY = 290;
+//   ballSpeedX = 2;
+//   ballSpeedY = -2;
+//   paddleX = 200;
+// }
 
 // Game Update Loop
 function update() {
@@ -209,5 +213,8 @@ function update() {
 }
 
 // Start Game
+drawBall();
+drawPaddle();
+drawBricks();
 initGame();
 requestAnimationFrame(update);
