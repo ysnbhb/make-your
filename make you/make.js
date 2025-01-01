@@ -4,28 +4,36 @@ const scoreDisplay = document.getElementById("score");
 const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
 
-let ballX = 240,
-  ballY = 290;
-let ballSpeedX = 2,
-  ballSpeedY = -2;
-let paddleX = 200;
-let rightPressed = false,
-  leftPressed = false;
-let score = 0;
-let lives = 3;
+let ballX, ballY;
+let ballSpeedX, ballSpeedY;
+let paddleX;
+let rightPressed, leftPressed;
+let score;
+let lives;
 
-// function getRandomColor() {
-//     const letters = '0123456789ABCDEF';
-//     let color = '#';
-//     for (let i = 0; i < 6; i++) {
-//         color += letters[Math.floor(Math.random() * 16)];
-//     }
-//     return color;
-// }
 function getRandomColor() {
-  const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
-  return colors[Math.floor(Math.random() * colors.length)];
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
 }
+// function getRandomColor() {
+//   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
+//   return colors[Math.floor(Math.random() * colors.length)];
+// }
+
+function Init() {
+  (ballX = 240), (ballY = 290);
+  (ballSpeedX = 2), (ballSpeedY = -2);
+  paddleX = 200;
+  (rightPressed = false), (leftPressed = false);
+  score = 0;
+  lives = 3;
+}
+
+Init();
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
@@ -103,8 +111,8 @@ function collisionDetection() {
           //     ballSpeedX *= 1.0; // 10%
           //     ballSpeedY *= 1.0; // 10%
           // }
-          ballSpeedX *= 1;
-          ballSpeedY *= 1;
+          ballSpeedX *= 1.001;
+          ballSpeedY *= 1.001;
           if (score === brickRowCount * brickColumnCount) {
             alert("YOU WIN, CONGRATULATIONS!");
             document.location.reload();
@@ -159,6 +167,8 @@ function Play() {
     } else {
       lives--;
       livesDisplay.textContent = `Lives: ${lives}`;
+      puese = true;
+      Init();
       if (lives === 0) {
         alert("GAME OVER");
         document.location.reload();
