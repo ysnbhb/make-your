@@ -42,19 +42,23 @@ const brickHeight = 30;
 const brickPadding = 30;
 let bricks = [];
 
-for (let c = 0; c < brickColumnCount; c++) {
-  bricks[c] = [];
-  for (let r = 0; r < brickRowCount; r++) {
-    const brick = document.createElement("div");
-    brick.classList.add("brick");
-    brick.style.left = c * (70 + 30) + "px";
-    brick.style.top = r * (30 + 30) + "px";
-    brick.style.backgroundColor = getRandomColor();
-    brick.hitCount = 0;
-    bricksContainer.appendChild(brick);
-    bricks[c][r] = { element: brick, status: 1 };
+function createBrak() {
+  for (let c = 0; c < brickColumnCount; c++) {
+    bricks[c] = [];
+    for (let r = 0; r < brickRowCount; r++) {
+      const brick = document.createElement("div");
+      brick.classList.add("brick");
+      brick.style.left = c * (70 + 30) + "px";
+      brick.style.top = r * (30 + 30) + "px";
+      brick.style.backgroundColor = getRandomColor();
+      brick.hitCount = 0;
+      bricksContainer.appendChild(brick);
+      bricks[c][r] = { element: brick, status: 1 };
+    }
   }
 }
+
+createBrak();
 
 let puese = false;
 
@@ -167,6 +171,7 @@ function Play() {
     } else {
       lives--;
       livesDisplay.textContent = `Lives: ${lives}`;
+      createBrak();
       puese = true;
       Init();
       if (lives === 0) {
