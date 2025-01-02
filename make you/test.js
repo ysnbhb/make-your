@@ -56,7 +56,7 @@ function initGame() {
   console.log(paddleX);
   paddle.style.left = paddleX + "px";
   score = 0;
-  createBricks();
+  // createBricks();
   updateScoreAndLives();
 }
 
@@ -74,7 +74,8 @@ function createBricks() {
       brick.style.top = r * (brickHeight + brickPadding) + "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
-      bricks[c][r] = { element: brick, status: 1 };
+      const status = Math.floor(Math.random() * 3 + 1);
+      bricks[c][r] = { element: brick, status: status };
     }
   }
 }
@@ -115,54 +116,110 @@ function drawPaddle() {
 function drawBricks() {
   bricks.forEach((col) => {
     col.forEach((brick) => {
-      brick.element.style.display = brick.status === 1 ? "block" : "none";
+      brick.element.style.display = brick.status !== 0 ? "block" : "none";
     });
   });
 }
 
-// Collision Detection
 function collisionDetection() {
+  const ballSize = 20; // Assume ball is 20x20 px
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = bricks[c][r];
-      if (brick.status === 1) {
+
+      if (brick.status !== 0) {
+        const brickLeft = brick.element.offsetLeft;
+        const brickRight = brickLeft + brickWidth;
+        const brickTop = brick.element.offsetTop;
+        const brickBottom = brickTop + brickHeight;
+
+        // Check if ball collides with the current brick
         if (
-          ballX + 20 > brick.element.offsetLeft &&
-          ballX < brick.element.offsetLeft + brickWidth &&
-          ballY + 20 > brick.element.offsetTop &&
-          ballY < brick.element.offsetTop + brickHeight
+          ballX + ballSize > brickLeft &&
+          ballX < brickRight &&
+          ballY + ballSize > brickTop &&
+          ballY < brickBottom
         ) {
+          // Reverse ball's vertical direction
           ballSpeedY = -ballSpeedY;
-          brick.status = 0;
+
+          // Mark brick as destroyed
+          brick.status -= 1;
+
+          // Update score
           score++;
           updateScoreAndLives();
-          // Increase ball speed slightly for challenge
+
+          // Gradually increase ball speed for challenge
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
 
-          if (IsWin()) {
-            alert("YOU WIN, CONGRATULATIONS!");
-            document.location.reload();
-          }
+          // Check for win condition
+          // if (IsWin()) {
+          //   alert("YOU WIN, CONGRATULATIONS!");
+          //   document.location.reload();
+          // }
+
+          // Exit the loop early since only one brick can be hit at a time
+          return;
         }
       }
     }
   }
 }
 
+// Helper function to check win condition
+// function isWin() {
+//   return bricks.every((column) => column.every((brick) => brick.status === 0));
+// }
+
+// Collision Detection
+// function collisionDetection() {
+//   for (let c = 0; c < brickColumnCount; c++) {
+//     for (let r = 0; r < brickRowCount; r++) {
+//       const brick = bricks[c][r];
+//       // console.log(brick.element.offsetLeft);
+//       // console.log(brick.element.offsetTop);
+
+//       if (brick.status === 1) {
+//         if (
+//           ballX + ball.clientWidth > brick.element.offsetLeft &&
+//           ballX + ball.clientWidth < brick.element.offsetLeft + brickWidth &&
+//           ballY + ball.clientWidth > brick.element.offsetTop &&
+//           ballY + ball.clientWidth < brick.element.offsetTop + brickHeight
+//         ) {
+//           ballSpeedY = -ballSpeedY;
+//           brick.status -= 1;
+//           score++;
+//           updateScoreAndLives();
+//           // Increase ball speed slightly for challenge
+//           ballSpeedX *= 1.01;
+//           ballSpeedY *= 1.01;
+
+//           if (IsWin()) {
+//             alert("YOU WIN, CONGRATULATIONS!");
+//             document.location.reload();
+//           }
+//         }
+//       }
+//     }
+//   }
+// }
+
 // Main Game Logic
 function playGame() {
   ballX += ballSpeedX;
   ballY += ballSpeedY;
-
+  const position = paddle.getBoundingClientRect();
+  const continarposition = gameContainer.getBoundingClientRect();
   // Wall Collision
-  if (ballX + ballSpeedX > 680 - 20 || ballX + ballSpeedX < 0)
+  if (ballX < 0 || ballX + ball.clientWidth > continarposition.width)
     ballSpeedX = -ballSpeedX;
-  if (ballY + ballSpeedY < 0) ballSpeedY = -ballSpeedY;
+  else if (ballY < 0) ballSpeedY = -ballSpeedY;
 
   // Paddle Collision
-  if (ballY + ballSpeedY > 500 - 20) {
-    if (ballX + 20 > paddleX && ballX < paddleX + 100) {
+  if (ballY + ball.clientWidth > continarposition.height - position.height) {
+    if (ballX + ball.clientWidth > paddleX && ballX < paddleX + 100) {
       ballSpeedY = -ballSpeedY;
 
       // Adjust ball angle based on paddle hit position
@@ -170,15 +227,14 @@ function playGame() {
       const deltaX = ballX - paddleCenter;
       const angle = deltaX / 50;
       ballSpeedX = angle * 5;
-    } else {
-      // Lose a life
+    } else if (ballY + ball.clientWidth >= continarposition.height) {
       lives--;
-      createBricks();
-      updateScoreAndLives();
-
       if (lives === 0) {
         alert("GAME OVER");
-        document.location.reload();
+        paused = true;
+        lives = 3;
+        initGame();
+        // document.location.reload();
       } else {
         paused = true;
         initGame();
@@ -204,17 +260,18 @@ function playGame() {
 function update() {
   if (!paused) {
     playGame();
-    drawBall();
-    drawPaddle();
-    drawBricks();
     collisionDetection();
   }
+  drawBall();
+  drawPaddle();
+  drawBricks();
   requestAnimationFrame(update);
 }
 
 // Start Game
-drawBall();
-drawPaddle();
-drawBricks();
+
 initGame();
+createBricks();
+console.log(bricks);
+
 requestAnimationFrame(update);
