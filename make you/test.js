@@ -23,14 +23,14 @@ const brickPadding = 30;
 let bricks = [];
 
 // Utility Function: Generate Random Colors
-// function getRandomColor() {
-//   const letters = "0123456789ABCDEF";
-//   let color = "#";
-//   for (let i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
+function getRandomColor() {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  for (let i = 0; i < 6; i++) {
+    color += letters[Math.floor(Math.random() * 16)];
+  }
+  return color;
+}
 
 function IsWin() {
   for (let c = 0; c < brickColumnCount; c++) {
@@ -41,10 +41,10 @@ function IsWin() {
   return true;
 }
 
-function getRandomColor() {
-  const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+// function getRandomColor() {
+//   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
+//   return colors[Math.floor(Math.random() * colors.length)];
+// }
 
 // Initialize Game State
 function initGame() {
@@ -53,9 +53,9 @@ function initGame() {
   ballSpeedX = 2;
   ballSpeedY = -2;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
-  console.log(paddleX);
+  // console.log(paddleX);
   paddle.style.left = paddleX + "px";
-  score = 0;
+  // score = 0;
   // createBricks();
   updateScoreAndLives();
 }
@@ -74,7 +74,7 @@ function createBricks() {
       brick.style.top = r * (brickHeight + brickPadding) + "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
-      const status = 1;
+      const status = 2;
       bricks[c][r] = { element: brick, status: status };
     }
   }
@@ -126,22 +126,36 @@ function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = bricks[c][r];
-
+      const position = brick.element.getBoundingClientRect();
+      const positionBall = ball.getBoundingClientRect();
       if (brick.status !== 0) {
-        const brickLeft = brick.element.offsetLeft;
-        const brickRight = brickLeft + brickWidth;
-        const brickTop = brick.element.offsetTop;
-        const brickBottom = brickTop + brickHeight;
+        const brickLeft = positionBall.left + ballSize;
+        const brickRight = positionBall.right - ballSize;
+        const brickTop = positionBall.top + ballSize;
+        const brickBottom = positionBall.bottom - ballSize;
 
         // Check if ball collides with the current brick
         if (
-          ballX + ballSize > brickLeft &&
-          ballX < brickRight &&
-          ballY + ballSize > brickTop &&
-          ballY < brickBottom
+          position.left <= brickLeft &&
+          position.right >= brickRight &&
+          position.top <= brickTop &&
+          position.bottom >= brickBottom
         ) {
+          // if (
+          //   positionBall.bottom - ballSpeedY < position.top || // Coming from the top
+          //   positionBall.top - ballSpeedY > position.bottom // Coming from below
+          // ) {
+          //   ballSpeedY = -ballSpeedY;
+          // } else {
+          //   ballSpeedX = -ballSpeedX;
+          // }
+          console.log(brick, c, r);
+
+          // console.log(ballSpeedY);
+
           // Reverse ball's vertical direction
           ballSpeedY = -ballSpeedY;
+          // console.log(ballSpeedY);
 
           // Mark brick as destroyed
           brick.status -= 1;
@@ -153,58 +167,19 @@ function collisionDetection() {
           // Gradually increase ball speed for challenge
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
+          drawBricks();
 
           // Check for win condition
           // if (IsWin()) {
           //   alert("YOU WIN, CONGRATULATIONS!");
           //   document.location.reload();
           // }
-
-          // Exit the loop early since only one brick can be hit at a time
           return;
         }
       }
     }
   }
 }
-
-// Helper function to check win condition
-// function isWin() {
-//   return bricks.every((column) => column.every((brick) => brick.status === 0));
-// }
-
-// Collision Detection
-// function collisionDetection() {
-//   for (let c = 0; c < brickColumnCount; c++) {
-//     for (let r = 0; r < brickRowCount; r++) {
-//       const brick = bricks[c][r];
-//       // console.log(brick.element.offsetLeft);
-//       // console.log(brick.element.offsetTop);
-
-//       if (brick.status === 1) {
-//         if (
-//           ballX + ball.clientWidth > brick.element.offsetLeft &&
-//           ballX + ball.clientWidth < brick.element.offsetLeft + brickWidth &&
-//           ballY + ball.clientWidth > brick.element.offsetTop &&
-//           ballY + ball.clientWidth < brick.element.offsetTop + brickHeight
-//         ) {
-//           ballSpeedY = -ballSpeedY;
-//           brick.status -= 1;
-//           score++;
-//           updateScoreAndLives();
-//           // Increase ball speed slightly for challenge
-//           ballSpeedX *= 1.01;
-//           ballSpeedY *= 1.01;
-
-//           if (IsWin()) {
-//             alert("YOU WIN, CONGRATULATIONS!");
-//             document.location.reload();
-//           }
-//         }
-//       }
-//     }
-//   }
-// }
 
 // Main Game Logic
 function playGame() {
@@ -218,8 +193,8 @@ function playGame() {
   else if (ballY < 0) ballSpeedY = -ballSpeedY;
 
   // Paddle Collision
-  if (ballY + ball.clientWidth > continarposition.height - position.height) {
-    if (ballX + ball.clientWidth > paddleX && ballX < paddleX + 100) {
+  if (ballY + ball.clientWidth >= continarposition.height - position.height) {
+    if (ballX + ball.clientWidth >= paddleX && ballX < paddleX + 100) {
       ballSpeedY = -ballSpeedY;
 
       // Adjust ball angle based on paddle hit position
@@ -243,7 +218,8 @@ function playGame() {
   }
 
   // Paddle Movement
-  if (rightPressed && paddleX < 680 - 104) paddleX += 7;
+  if (rightPressed && paddleX <= continarposition.width - position.width - 2)
+    paddleX += 7;
   if (leftPressed && paddleX > 1) paddleX -= 7;
 }
 
@@ -257,14 +233,15 @@ function playGame() {
 // }
 
 // Game Update Loop
+const test = document.getElementById("test");
 function update() {
+  test.innerText = (Number(test.innerText) + 1) % 100;
   if (!paused) {
     playGame();
     collisionDetection();
   }
   drawBall();
   drawPaddle();
-  drawBricks();
   requestAnimationFrame(update);
 }
 
