@@ -74,7 +74,7 @@ function createBricks() {
       brick.style.top = r * (brickHeight + brickPadding) + "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
-      const status = 2;
+      const status = 1;
       bricks[c][r] = { element: brick, status: status };
     }
   }
@@ -149,14 +149,14 @@ function collisionDetection() {
           // } else {
           //   ballSpeedX = -ballSpeedX;
           // }
-          console.log(brick, c, r);
 
           // console.log(ballSpeedY);
 
           // Reverse ball's vertical direction
           ballSpeedY = -ballSpeedY;
           // console.log(ballSpeedY);
-
+          ballSpeedY *= 1.04;
+          ballSpeedX *= 1.04;
           // Mark brick as destroyed
           brick.status -= 1;
 
