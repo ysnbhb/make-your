@@ -1,0 +1,72 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background-color: #c5c3c3;
+  }
+  
+  #gameContainer {
+    position: relative;
+    width: 680px;
+    height: 500px;
+    background-color: #000;
+    border: 2px solid #030303;
+    overflow: hidden;
+  }
+  
+  #paddle {
+    position: absolute;
+    bottom: 0px;
+    /* left: 50%; */
+    width: 100px;
+    height: 20px;
+    background-color: rgb(1, 1, 114);
+    /* margin-left: -37.5px; */
+    border: 2px solid #3357ff;
+    border-radius: 10px;
+  }
+
+  #ball {
+    position: absolute;
+    bottom: 30px;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    background-color: #3357ff;
+    border-radius: 50%;
+  }
+  
+  #bricksContainer {
+    position: absolute;
+    top: 30px;
+    left: 0;
+    width: 100%;
+    height: 240px;
+  }
+  
+  .brick {
+    position: absolute;
+    width: 80px;
+    height: 40px;
+    background-color: #33ff57;
+    /* border: 4px solid #1b832e; */
+  }
+  
+  #score, #lives {
+    position: absolute;
+    top: 10px;
+    font-size: 16px;
+    color: #faf6f6;
+  }
+  
+  #score {
+    left: 10px;
+  }
+  
+  #lives {
+    right: 10px;
+  }
+  
