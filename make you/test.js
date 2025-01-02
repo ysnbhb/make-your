@@ -74,7 +74,7 @@ function createBricks() {
       brick.style.top = r * (brickHeight + brickPadding) + "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
-      const status = Math.floor(Math.random() * 3 + 1);
+      const status = 1;
       bricks[c][r] = { element: brick, status: status };
     }
   }
