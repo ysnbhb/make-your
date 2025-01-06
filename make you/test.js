@@ -23,28 +23,28 @@ const brickPadding = 30;
 let bricks = [];
 
 // Utility Function: Generate Random Colors
-function getRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
+// function getRandomColor() {
+//   const letters = "0123456789ABCDEF";
+//   let color = "#";
+//   for (let i = 0; i < 6; i++) {
+//     color += letters[Math.floor(Math.random() * 16)];
+//   }
+//   return color;
+// }
 
 function IsWin() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].status === 1) return false;
+      if (bricks[c][r].status > 0) return false;
     }
   }
   return true;
 }
 
-// function getRandomColor() {
-//   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
-//   return colors[Math.floor(Math.random() * colors.length)];
-// }
+function getRandomColor() {
+  const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
 
 // Initialize Game State
 function initGame() {
@@ -75,7 +75,8 @@ function createBricks() {
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
       const status = 1;
-      bricks[c][r] = { element: brick, status: status };
+      const last = false;
+      bricks[c][r] = { element: brick, status: status, last: last };
     }
   }
 }
@@ -116,7 +117,7 @@ function drawPaddle() {
 function drawBricks() {
   bricks.forEach((col) => {
     col.forEach((brick) => {
-      brick.element.style.display = brick.status !== 0 ? "block" : "none";
+      brick.element.style.display = brick.status !== 0 ? "bloclastk" : "none";
     });
   });
 }
@@ -128,7 +129,7 @@ function collisionDetection() {
       const brick = bricks[c][r];
       const position = brick.element.getBoundingClientRect();
       const positionBall = ball.getBoundingClientRect();
-      if (brick.status !== 0) {
+      if (brick.status !== 0 && !brick.last) {
         const brickLeft = positionBall.left + ballSize;
         const brickRight = positionBall.right - ballSize;
         const brickTop = positionBall.top + ballSize;
@@ -141,22 +142,11 @@ function collisionDetection() {
           position.top <= brickTop &&
           position.bottom >= brickBottom
         ) {
-          // if (
-          //   positionBall.bottom - ballSpeedY < position.top || // Coming from the top
-          //   positionBall.top - ballSpeedY > position.bottom // Coming from below
-          // ) {
-          //   ballSpeedY = -ballSpeedY;
-          // } else {
-          //   ballSpeedX = -ballSpeedX;
-          // }
-
-          // console.log(ballSpeedY);
-
           // Reverse ball's vertical direction
           ballSpeedY = -ballSpeedY;
           // console.log(ballSpeedY);
-          ballSpeedY *= 1.04;
-          ballSpeedX *= 1.04;
+          // ballSpeedY *= 1.04;
+          // ballSpeedX *= 1.04;
           // Mark brick as destroyed
           brick.status -= 1;
 
@@ -168,15 +158,16 @@ function collisionDetection() {
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           drawBricks();
-
+          brick.last = true;
           // Check for win condition
-          // if (IsWin()) {
-          //   alert("YOU WIN, CONGRATULATIONS!");
-          //   document.location.reload();
-          // }
+          if (IsWin()) {
+            alert("YOU WIN, CONGRATULATIONS!");
+            document.location.reload();
+          }
           return;
         }
       }
+      brick.last = false;
     }
   }
 }
@@ -188,9 +179,9 @@ function playGame() {
   const position = paddle.getBoundingClientRect();
   const continarposition = gameContainer.getBoundingClientRect();
   // Wall Collision
-  if (ballX < 0 || ballX + ball.clientWidth > continarposition.width)
+  if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width)
     ballSpeedX = -ballSpeedX;
-  else if (ballY < 0) ballSpeedY = -ballSpeedY;
+  if (ballY < 0) ballSpeedY = -ballSpeedY;
 
   // Paddle Collision
   if (ballY + ball.clientWidth >= continarposition.height - position.height) {
