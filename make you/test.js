@@ -217,18 +217,23 @@ function playGame() {
   const position = paddle.getBoundingClientRect();
   const continarposition = gameContainer.getBoundingClientRect();
   // Wall Collision
-  if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width)
+  if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
     // if (ballX < 0) {
     //   ballX = 0;
     // } else if (ballX + ball.clientWidth > continarposition.width) {
     //   ballX = continarposition.width - ball.clientWidth;
     // }
-  ballSpeedX = -ballSpeedX;
+    ballX = ballX < 0 ? 0 : continarposition.width - ball.clientWidth;
+    ballSpeedX = -ballSpeedX;
+  }
   if (ballY < 0) ballSpeedY = -ballSpeedY;
 
   // Paddle Collision
   if (ballY + ball.clientWidth >= continarposition.height - position.height) {
-    if (ballX + ball.clientWidth >= paddleX && ballX < paddleX + 100) {
+    if (
+      ballX + ball.clientWidth >= paddleX &&
+      ballX < paddleX + paddle.clientWidth
+    ) {
       ballSpeedY = -ballSpeedY;
 
       // Adjust ball angle based on paddle hit position
