@@ -21,7 +21,7 @@ const brickWidth = bricksContainer.clientWidth * 0.1;
 const brickHeight = bricksContainer.clientHeight * 0.1;
 const brickPadding = 30;
 let bricks = [];
-let time = 60;
+let time = 120;
 const divTime = document.getElementById("timer");
 // Utility Function: Generate Random Colors
 // function getRandomColor() {
@@ -132,7 +132,7 @@ function drawPaddle() {
 function drawBricks() {
   bricks.forEach((col) => {
     col.forEach((brick) => {
-      brick.element.style.display = brick.status !== 0 ? "bloclastk" : "none";
+      brick.element.style.display = brick.status !== 0 ? "block" : "none";
     });
   });
 }
@@ -176,7 +176,6 @@ function collisionDetection() {
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
-
           if (IsWin()) {
             alert("YOU WIN, CONGRATULATIONS!");
             document.location.reload();
@@ -251,6 +250,7 @@ function update() {
   drawBricks();
   drawBall();
   drawPaddle();
+
   requestAnimationFrame(update);
 }
 
