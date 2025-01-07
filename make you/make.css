@@ -50,6 +50,13 @@ body {
   height: 240px;
 }
 
+#timer {
+  color: white;
+  position: absolute;
+  left: 13%;
+  top: 10px;
+}
+
 .brick {
   position: absolute;
   width: 10%;

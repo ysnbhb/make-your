@@ -21,7 +21,8 @@ const brickWidth = bricksContainer.clientWidth * 0.1;
 const brickHeight = bricksContainer.clientHeight * 0.1;
 const brickPadding = 30;
 let bricks = [];
-
+let time = 60;
+const divTime = document.getElementById("timer");
 // Utility Function: Generate Random Colors
 // function getRandomColor() {
 //   const letters = "0123456789ABCDEF";
@@ -31,6 +32,18 @@ let bricks = [];
 //   }
 //   return color;
 // }
+
+function showTime() {
+  const second = (time % 60).toString().padStart(2, "0");
+  const minute = Math.floor(time / 60)
+    .toString()
+    .padStart(2, "0");
+  divTime.innerText = `${minute}:${second}`;
+  if (paused) return;
+  time = time - 1;
+}
+
+setInterval(showTime, 1000);
 
 function IsWin() {
   for (let c = 0; c < brickColumnCount; c++) {
