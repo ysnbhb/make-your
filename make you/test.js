@@ -21,7 +21,7 @@ const brickWidth = bricksContainer.clientWidth * 0.1;
 const brickHeight = bricksContainer.clientHeight * 0.1;
 const brickPadding = 30;
 let bricks = [];
-let time = 120;
+let time = 60;
 const divTime = document.getElementById("timer");
 // Utility Function: Generate Random Colors
 // function getRandomColor() {
@@ -40,6 +40,13 @@ function showTime() {
     .padStart(2, "0");
   divTime.innerText = `${minute}:${second}`;
   if (paused) return;
+  if (time === 0) {
+    alert("GAME OVER");
+    paused = true;
+    lives = 3;
+    initGame();
+    return;
+  }
   time = time - 1;
 }
 
@@ -274,7 +281,7 @@ function playGame() {
 // Game Update Loop
 const test = document.getElementById("test");
 function update() {
-  test.innerText = (Number(test.innerText) + 1) % 100;
+  // test.innerText = (Number(test.innerText) + 1) % 100;
   if (!paused) {
     playGame();
     collisionDetection();
