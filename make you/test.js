@@ -17,8 +17,8 @@ let paused = true;
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
-const brickWidth = 70;
-const brickHeight = 30;
+const brickWidth = bricksContainer.clientWidth * 0.1;
+const brickHeight = bricksContainer.clientHeight * 0.1;
 const brickPadding = 30;
 let bricks = [];
 
@@ -70,8 +70,10 @@ function createBricks() {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = document.createElement("div");
       brick.classList.add("brick");
-      brick.style.left = c * (brickWidth + brickPadding) + "px";
-      brick.style.top = r * (brickHeight + brickPadding) + "px";
+      brick.style.left =
+        c * (bricksContainer.clientWidth * 0.1 + brickPadding) + "px";
+      brick.style.top =
+        r * (bricksContainer.clientHeight * 0.1 + brickPadding) + "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
       const status = 1;
@@ -122,7 +124,6 @@ function drawBricks() {
   });
 }
 
-
 function collisionDetection() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
@@ -130,13 +131,16 @@ function collisionDetection() {
       const brickPosition = brick.element.getBoundingClientRect();
       const ballPosition = ball.getBoundingClientRect();
 
-      if (brick.status !== 0 && !brick.last) {
+      if (brick.status !== 0) {
         if (
-          ballPosition.right >= brickPosition.left && 
-          ballPosition.left <= brickPosition.right && 
-          ballPosition.bottom >= brickPosition.top && 
-          ballPosition.top <= brickPosition.bottom 
+          ballPosition.right >= brickPosition.left &&
+          ballPosition.left <= brickPosition.right &&
+          ballPosition.bottom >= brickPosition.top &&
+          ballPosition.top <= brickPosition.bottom
         ) {
+          if (brick.last) {
+            return;
+          }
           // Determine collision side based on overlap
           const overlapX = Math.min(
             ballPosition.right - brickPosition.left,
@@ -149,17 +153,15 @@ function collisionDetection() {
 
           // Reverse ball direction based on the smaller overlap (more direct collision)
           if (overlapX < overlapY) {
-            ballSpeedX = -ballSpeedX; 
+            ballSpeedX = -ballSpeedX;
           } else {
-            ballSpeedY = -ballSpeedY; 
+            ballSpeedY = -ballSpeedY;
           }
           brick.status -= 1;
           score++;
           updateScoreAndLives();
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
-
-          drawBricks();
           brick.last = true;
 
           if (IsWin()) {
@@ -233,6 +235,7 @@ function update() {
     playGame();
     collisionDetection();
   }
+  drawBricks();
   drawBall();
   drawPaddle();
   requestAnimationFrame(update);

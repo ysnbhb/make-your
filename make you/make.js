@@ -37,8 +37,8 @@ Init();
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
-const brickWidth = 70;
-const brickHeight = 30;
+const brickWidth = bricksContainer.clientWidth * 0.1;
+const brickHeight = bricksContainer.clientHeight * 0.1;
 const brickPadding = 30;
 let bricks = [];
 
