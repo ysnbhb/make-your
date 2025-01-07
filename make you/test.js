@@ -122,44 +122,46 @@ function drawBricks() {
   });
 }
 
+
 function collisionDetection() {
-  const ballSize = 20; // Assume ball is 20x20 px
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = bricks[c][r];
-      const position = brick.element.getBoundingClientRect();
-      const positionBall = ball.getBoundingClientRect();
+      const brickPosition = brick.element.getBoundingClientRect();
+      const ballPosition = ball.getBoundingClientRect();
+
       if (brick.status !== 0 && !brick.last) {
-        const brickLeft = positionBall.left + ballSize;
-        const brickRight = positionBall.right - ballSize;
-        const brickTop = positionBall.top + ballSize;
-        const brickBottom = positionBall.bottom - ballSize;
-
-        // Check if ball collides with the current brick
         if (
-          position.left <= brickLeft &&
-          position.right >= brickRight &&
-          position.top <= brickTop &&
-          position.bottom >= brickBottom
+          ballPosition.right >= brickPosition.left && 
+          ballPosition.left <= brickPosition.right && 
+          ballPosition.bottom >= brickPosition.top && 
+          ballPosition.top <= brickPosition.bottom 
         ) {
-          // Reverse ball's vertical direction
-          ballSpeedY = -ballSpeedY;
-          // console.log(ballSpeedY);
-          // ballSpeedY *= 1.04;
-          // ballSpeedX *= 1.04;
-          // Mark brick as destroyed
-          brick.status -= 1;
+          // Determine collision side based on overlap
+          const overlapX = Math.min(
+            ballPosition.right - brickPosition.left,
+            brickPosition.right - ballPosition.left
+          );
+          const overlapY = Math.min(
+            ballPosition.bottom - brickPosition.top,
+            brickPosition.bottom - ballPosition.top
+          );
 
-          // Update score
+          // Reverse ball direction based on the smaller overlap (more direct collision)
+          if (overlapX < overlapY) {
+            ballSpeedX = -ballSpeedX; 
+          } else {
+            ballSpeedY = -ballSpeedY; 
+          }
+          brick.status -= 1;
           score++;
           updateScoreAndLives();
-
-          // Gradually increase ball speed for challenge
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
+
           drawBricks();
           brick.last = true;
-          // Check for win condition
+
           if (IsWin()) {
             alert("YOU WIN, CONGRATULATIONS!");
             document.location.reload();
