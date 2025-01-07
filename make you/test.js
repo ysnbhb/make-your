@@ -84,9 +84,15 @@ function createBricks() {
       const brick = document.createElement("div");
       brick.classList.add("brick");
       brick.style.left =
-        c * (bricksContainer.clientWidth * 0.1 + brickPadding) + "px";
+        c *
+          (bricksContainer.clientWidth * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
       brick.style.top =
-        r * (bricksContainer.clientHeight * 0.1 + brickPadding) + "px";
+        r *
+          (bricksContainer.clientHeight * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
       const status = 1;
@@ -130,11 +136,27 @@ function drawPaddle() {
 
 // Draw Bricks
 function drawBricks() {
-  bricks.forEach((col) => {
-    col.forEach((brick) => {
+  // bricks.forEach((col) => {
+  //   col.forEach((brick) => {
+  //     brick.element.style.display = brick.status !== 0 ? "block" : "none";
+  //   });
+  // });
+  for (let c = 0; c < brickColumnCount; c++) {
+    for (let r = 0; r < brickRowCount; r++) {
+      const brick = bricks[c][r];
+      brick.element.style.left =
+        c *
+          (bricksContainer.clientWidth * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
+      brick.element.style.top =
+        r *
+          (bricksContainer.clientHeight * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
       brick.element.style.display = brick.status !== 0 ? "block" : "none";
-    });
-  });
+    }
+  }
 }
 
 function collisionDetection() {
@@ -196,7 +218,12 @@ function playGame() {
   const continarposition = gameContainer.getBoundingClientRect();
   // Wall Collision
   if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width)
-    ballSpeedX = -ballSpeedX;
+    // if (ballX < 0) {
+    //   ballX = 0;
+    // } else if (ballX + ball.clientWidth > continarposition.width) {
+    //   ballX = continarposition.width - ball.clientWidth;
+    // }
+  ballSpeedX = -ballSpeedX;
   if (ballY < 0) ballSpeedY = -ballSpeedY;
 
   // Paddle Collision
