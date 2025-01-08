@@ -1,3 +1,13 @@
+import {
+  DivstartGame,
+  lose,
+  Losemuen,
+  pauseMue,
+  showmine,
+  timeOut,
+  Win,
+} from "./global.js";
+
 // DOM Elements
 const ball = document.getElementById("ball");
 const paddle = document.getElementById("paddle");
@@ -5,6 +15,7 @@ const scoreDisplay = document.getElementById("score");
 const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
 const gameContainer = document.getElementById("gameContainer");
+const divTime = document.getElementById("timer");
 // Game Variables
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
@@ -14,15 +25,12 @@ let rightPressed = false,
 let score = 0;
 let lives = 3;
 let paused = true;
+let beforstart = true;
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
-const brickWidth = bricksContainer.clientWidth * 0.1;
-const brickHeight = bricksContainer.clientHeight * 0.1;
-const brickPadding = 30;
 let bricks = [];
-let time = 60;
-const divTime = document.getElementById("timer");
+let time = 90;
 // Utility Function: Generate Random Colors
 // function getRandomColor() {
 //   const letters = "0123456789ABCDEF";
@@ -38,13 +46,11 @@ function showTime() {
   const minute = Math.floor(time / 60)
     .toString()
     .padStart(2, "0");
-  divTime.innerText = `${minute}:${second}`;
+  divTime.innerText = `Time: ${minute}:${second}`;
   if (paused) return;
   if (time === 0) {
-    alert("GAME OVER");
     paused = true;
-    lives = 3;
-    initGame();
+    lose(timeOut);
     return;
   }
   time = time - 1;
@@ -66,25 +72,30 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
-// Initialize Game State
 function initGame() {
   ballX = gameContainer.clientWidth / 2;
   ballY = gameContainer.clientHeight - 40;
-  ballSpeedX = 2;
+  ballSpeedX = -2;
   ballSpeedY = -2;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
-  // console.log(paddleX);
   paddle.style.left = paddleX + "px";
-  // score = 0;
-  // createBricks();
+  beforstart = true;
   updateScoreAndLives();
+}
+
+function Start() {
+  const start = document.getElementById("start");
+  start.addEventListener("click", () => {
+    const minue = document.getElementById("PusedMine");
+    minue.style.display = "none";
+    minue.innerHTML = "";
+  });
 }
 
 // Create Bricks
 function createBricks() {
   bricks = [];
   bricksContainer.innerHTML = ""; // Clear previous bricks
-
   for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
@@ -119,7 +130,46 @@ function updateScoreAndLives() {
 function handleKeyDown(e) {
   if (e.key === "ArrowRight") rightPressed = true;
   if (e.key === "ArrowLeft") leftPressed = true;
-  if (e.key === " ") paused = !paused;
+  if (e.key === " ") {
+    const start = document.getElementById("start");
+    if (beforstart && !start) {
+      paused = !paused;
+      beforstart = false;
+    }
+  }
+  if (e.key == "p") {
+    if (!beforstart) {
+      paused = true;
+      showmine(pauseMue);
+    }
+  }
+}
+
+export function Continue(minue) {
+  const div = document.getElementById("Continue");
+  div.addEventListener("click", () => {
+    minue.style.display = "none";
+    paused = false;
+  });
+}
+
+export function RestartBtn(minue) {
+  const div = document.getElementById("Restart");
+  div.addEventListener("click", () => {
+    // minue.style.display = "none";
+    Restart();
+
+    minue.innerHTML = DivstartGame;
+    Start();
+  });
+}
+
+function Restart() {
+  initGame();
+  createBricks();
+  lives = 3;
+  score = 0;
+  time = 90;
 }
 
 function handleKeyUp(e) {
@@ -143,11 +193,6 @@ function drawPaddle() {
 
 // Draw Bricks
 function drawBricks() {
-  // bricks.forEach((col) => {
-  //   col.forEach((brick) => {
-  //     brick.element.style.display = brick.status !== 0 ? "block" : "none";
-  //   });
-  // });
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = bricks[c][r];
@@ -206,8 +251,8 @@ function collisionDetection() {
           ballSpeedY *= 1.01;
           brick.last = true;
           if (IsWin()) {
-            alert("YOU WIN, CONGRATULATIONS!");
-            document.location.reload();
+            lose(Win);
+            paused = true;
           }
           return;
         }
@@ -225,12 +270,11 @@ function playGame() {
   const continarposition = gameContainer.getBoundingClientRect();
   // Wall Collision
   if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
-    // if (ballX < 0) {
-    //   ballX = 0;
-    // } else if (ballX + ball.clientWidth > continarposition.width) {
-    //   ballX = continarposition.width - ball.clientWidth;
-    // }
-    ballX = ballX < 0 ? 0 : continarposition.width - ball.clientWidth;
+    if (ballX < 0) {
+      ballX = 0;
+    } else if (ballX + ball.clientWidth > continarposition.width) {
+      ballX = continarposition.width - ball.clientWidth;
+    }
     ballSpeedX = -ballSpeedX;
   }
   if (ballY < 0) ballSpeedY = -ballSpeedY;
@@ -251,11 +295,8 @@ function playGame() {
     } else if (ballY + ball.clientWidth >= continarposition.height) {
       lives--;
       if (lives === 0) {
-        alert("GAME OVER");
         paused = true;
-        lives = 3;
-        initGame();
-        // document.location.reload();
+        lose(Losemuen);
       } else {
         paused = true;
         initGame();
@@ -269,19 +310,10 @@ function playGame() {
   if (leftPressed && paddleX > 1) paddleX -= 7;
 }
 
-// Reset Ball and Paddle Position
-// function resetBallAndPaddle() {
-//   ballX = 240;
-//   ballY = 290;
-//   ballSpeedX = 2;
-//   ballSpeedY = -2;
-//   paddleX = 200;
-// }
-
 // Game Update Loop
 const test = document.getElementById("test");
 function update() {
-  // test.innerText = (Number(test.innerText) + 1) % 100;
+  test.innerText = (Number(test.innerText) + 1) % 100;
   if (!paused) {
     playGame();
     collisionDetection();
@@ -294,9 +326,7 @@ function update() {
 }
 
 // Start Game
-
 initGame();
 createBricks();
-console.log(bricks);
-
+Start();
 requestAnimationFrame(update);
