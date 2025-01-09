@@ -72,6 +72,10 @@ function getRandomColor() {
   return colors[Math.floor(Math.random() * colors.length)];
 }
 
+window.addEventListener("resize", () => {
+  drawBricks();
+});
+
 function initGame() {
   ballX = gameContainer.clientWidth / 2;
   ballY = gameContainer.clientHeight - 40;
@@ -128,20 +132,44 @@ function updateScoreAndLives() {
 
 // Handle Keyboard Input
 function handleKeyDown(e) {
-  if (e.key === "ArrowRight") rightPressed = true;
-  if (e.key === "ArrowLeft") leftPressed = true;
+  const start = document.getElementById("start");
+  if (e.key === "ArrowRight") {
+    rightPressed = true;
+    if (beforstart && !start) {
+      MoveBeforStart();
+    }
+  }
+  if (e.key === "ArrowLeft") {
+    leftPressed = true;
+    if (beforstart && !start) {
+      MoveBeforStart();
+    }
+  }
   if (e.key === " ") {
-    const start = document.getElementById("start");
     if (beforstart && !start) {
       paused = !paused;
       beforstart = false;
     }
   }
-  if (e.key == "p") {
-    if (!beforstart) {
+  if (e.key == "p" || e.key == "Escape") {
+    if (!beforstart && lives > 0 && time > 0 && !IsWin()) {
       paused = true;
       showmine(pauseMue);
     }
+  }
+}
+
+function MoveBeforStart() {
+  const continarposition = gameContainer.getBoundingClientRect();
+  const position = paddle.getBoundingClientRect();
+
+  if (rightPressed && paddleX <= continarposition.width - position.width - 2) {
+    paddleX += 7;
+    ballX += 7;
+  }
+  if (leftPressed && paddleX > 1) {
+    paddleX -= 7;
+    ballX -= 7;
   }
 }
 
@@ -170,6 +198,7 @@ function Restart() {
   lives = 3;
   score = 0;
   time = 90;
+  updateScoreAndLives();
 }
 
 function handleKeyUp(e) {
@@ -250,6 +279,7 @@ function collisionDetection() {
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
+          drawBricks();
           if (IsWin()) {
             lose(Win);
             paused = true;
@@ -294,11 +324,10 @@ function playGame() {
       ballSpeedX = angle * 5;
     } else if (ballY + ball.clientWidth >= continarposition.height) {
       lives--;
+      paused = true;
       if (lives === 0) {
-        paused = true;
         lose(Losemuen);
       } else {
-        paused = true;
         initGame();
       }
     }
@@ -318,7 +347,6 @@ function update() {
     playGame();
     collisionDetection();
   }
-  drawBricks();
   drawBall();
   drawPaddle();
 
