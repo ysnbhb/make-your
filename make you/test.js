@@ -16,6 +16,8 @@ const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
 const gameContainer = document.getElementById("gameContainer");
 const divTime = document.getElementById("timer");
+const test = document.getElementById("test");
+
 // Game Variables
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
@@ -31,32 +33,34 @@ const brickRowCount = 5;
 const brickColumnCount = 7;
 let bricks = [];
 let time = 90;
-// Utility Function: Generate Random Colors
-// function getRandomColor() {
-//   const letters = "0123456789ABCDEF";
-//   let color = "#";
-//   for (let i = 0; i < 6; i++) {
-//     color += letters[Math.floor(Math.random() * 16)];
-//   }
-//   return color;
-// }
 
-function showTime() {
-  const second = (time % 60).toString().padStart(2, "0");
-  const minute = Math.floor(time / 60)
-    .toString()
-    .padStart(2, "0");
-  divTime.innerText = `Time: ${minute}:${second}`;
-  if (paused) return;
-  if (time === 0) {
-    paused = true;
-    lose(timeOut);
+let lastTimeUpdate = 0;
+
+function showTime(timestamp) {
+  if (paused) {
+    requestAnimationFrame(showTime);
     return;
   }
-  time = time - 1;
+
+  if (timestamp - lastTimeUpdate >= 1000) {
+    lastTimeUpdate = timestamp;
+    const second = (time % 60).toString().padStart(2, "0");
+    const minute = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
+    divTime.innerText = `Time: ${minute}:${second}`;
+    if (time === 0) {
+      paused = true;
+      lose(timeOut);
+      return;
+    }
+    time--;
+  }
+
+  requestAnimationFrame(showTime);
 }
 
-setInterval(showTime, 1000);
+requestAnimationFrame(showTime);
 
 function IsWin() {
   for (let c = 0; c < brickColumnCount; c++) {
@@ -67,14 +71,14 @@ function IsWin() {
   return true;
 }
 
+window.addEventListener("resize", () => {
+  drawBricks();
+});
+
 function getRandomColor() {
   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
   return colors[Math.floor(Math.random() * colors.length)];
 }
-
-window.addEventListener("resize", () => {
-  drawBricks();
-});
 
 function initGame() {
   ballX = gameContainer.clientWidth / 2;
@@ -181,6 +185,13 @@ export function Continue(minue) {
   });
 }
 
+function Test() {
+  test.innerText = (Number(test.innerText) + 1) % 100;
+  requestAnimationFrame(Test);
+}
+
+requestAnimationFrame(Test);
+
 export function RestartBtn(minue) {
   const div = document.getElementById("Restart");
   div.addEventListener("click", () => {
@@ -198,6 +209,11 @@ function Restart() {
   lives = 3;
   score = 0;
   time = 90;
+  const second = (time % 60).toString().padStart(2, "0");
+  const minute = Math.floor(time / 60)
+    .toString()
+    .padStart(2, "0");
+  divTime.innerText = `Time: ${minute}:${second}`;
   updateScoreAndLives();
 }
 
@@ -276,10 +292,11 @@ function collisionDetection() {
           brick.status -= 1;
           score++;
           updateScoreAndLives();
+          drawBricks();
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
-          drawBricks();
+          // drawBricks();
           if (IsWin()) {
             lose(Win);
             paused = true;
@@ -340,16 +357,13 @@ function playGame() {
 }
 
 // Game Update Loop
-const test = document.getElementById("test");
 function update() {
-  test.innerText = (Number(test.innerText) + 1) % 100;
   if (!paused) {
     playGame();
     collisionDetection();
   }
   drawBall();
   drawPaddle();
-
   requestAnimationFrame(update);
 }
 
