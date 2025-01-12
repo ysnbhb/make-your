@@ -320,13 +320,13 @@ function updateFPSDisplay() {
 }
 
 function calculateFPS(now) {
-  frameCount++;
+  // frameCount++;
   // const now = performance.now();
 
   const elapsedTime = (now - lastFrameTime) / 1000;
 
-  fps = frameCount / elapsedTime;
-  frameCount = 0;
+  fps = 1 / elapsedTime;
+  // frameCount = 0;
   lastFrameTime = now;
   requestAnimationFrame(calculateFPS);
 }
@@ -351,7 +351,7 @@ function playGame() {
       }
       ballSpeedX = -ballSpeedX;
     }
-    if (ballY < 0) ballSpeedY = -ballSpeedY;
+    if (ballY <= 0) ballSpeedY = -ballSpeedY;
 
     // Paddle Collision
     if (ballY + ball.clientWidth >= continarposition.height - position.height) {
