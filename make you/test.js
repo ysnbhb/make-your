@@ -16,9 +16,10 @@ const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
 const gameContainer = document.getElementById("gameContainer");
 const divTime = document.getElementById("timer");
-const test = document.getElementById("test");
 
 // Game Variables
+const position = paddle.getBoundingClientRect();
+const continarposition = gameContainer.getBoundingClientRect();
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
 let paddleX;
@@ -28,6 +29,8 @@ let score = 0;
 let lives = 3;
 let paused = true;
 let beforstart = true;
+let totalStates = 0;
+let iswin = 0;
 
 const brickRowCount = 5;
 const brickColumnCount = 7;
@@ -61,15 +64,6 @@ function showTime(timestamp) {
 }
 
 requestAnimationFrame(showTime);
-
-function IsWin() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].status > 0) return false;
-    }
-  }
-  return true;
-}
 
 window.addEventListener("resize", () => {
   drawBricks();
@@ -122,6 +116,7 @@ function createBricks() {
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
       const status = 1;
+      totalStates += status;
       const last = false;
       bricks[c][r] = { element: brick, status: status, last: last };
     }
@@ -145,9 +140,6 @@ function handleKeyDown(e) {
   }
   if (e.key === "ArrowLeft") {
     leftPressed = true;
-    if (beforstart && !start) {
-      MoveBeforStart();
-    }
   }
   if (e.key === " ") {
     if (beforstart && !start) {
@@ -156,7 +148,7 @@ function handleKeyDown(e) {
     }
   }
   if (e.key == "p" || e.key == "Escape") {
-    if (!beforstart && lives > 0 && time > 0 && !IsWin()) {
+    if (!beforstart && lives > 0 && time > 0 && iswin != totalStates) {
       paused = true;
       showmine(pauseMue);
     }
@@ -185,12 +177,12 @@ export function Continue(minue) {
   });
 }
 
-function Test() {
-  test.innerText = (Number(test.innerText) + 1) % 100;
-  requestAnimationFrame(Test);
-}
+// function Test() {
+//   test.innerText = (Number(test.innerText) + 1) % 100;
+//   requestAnimationFrame(Test);
+// }
 
-requestAnimationFrame(Test);
+// requestAnimationFrame(Test);
 
 export function RestartBtn(minue) {
   const div = document.getElementById("Restart");
@@ -214,6 +206,8 @@ function Restart() {
     .toString()
     .padStart(2, "0");
   divTime.innerText = `Time: ${minute}:${second}`;
+  totalStates = 0;
+  iswin = 0;
   updateScoreAndLives();
 }
 
@@ -237,7 +231,7 @@ function drawPaddle() {
 }
 
 // Draw Bricks
-function drawBricks() {
+async function drawBricks() {
   for (let c = 0; c < brickColumnCount; c++) {
     for (let r = 0; r < brickRowCount; r++) {
       const brick = bricks[c][r];
@@ -291,13 +285,13 @@ function collisionDetection() {
           }
           brick.status -= 1;
           score++;
-          updateScoreAndLives();
-          drawBricks();
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
+          iswin++;
           // drawBricks();
-          if (IsWin()) {
+          drawBricks();
+          if (iswin == totalStates) {
             lose(Win);
             paused = true;
           }
@@ -309,59 +303,96 @@ function collisionDetection() {
   }
 }
 
+const fpsDisplay = document.createElement("div");
+fpsDisplay.style.position = "fixed";
+fpsDisplay.style.top = "10px";
+fpsDisplay.style.left = "10px";
+fpsDisplay.style.color = "white";
+fpsDisplay.style.background = "black";
+fpsDisplay.style.padding = "5px";
+fpsDisplay.style.fontFamily = "Arial";
+document.body.appendChild(fpsDisplay);
+let lastFrameTime = performance.now();
+let frameCount = 0;
+let fps = 0;
+
+function updateFPSDisplay() {
+  fpsDisplay.innerText = `FPS: ${Math.round(fps)}`;
+  requestAnimationFrame(updateFPSDisplay);
+}
+
+function calculateFPS(now) {
+  frameCount++;
+  // const now = performance.now();
+
+  const elapsedTime = (now - lastFrameTime) / 1000;
+
+  fps = frameCount / elapsedTime;
+  frameCount = 0;
+  lastFrameTime = now;
+  requestAnimationFrame(calculateFPS);
+}
+
+// Start the FPS calculation
+calculateFPS();
+
+updateFPSDisplay();
+
 // Main Game Logic
 function playGame() {
-  ballX += ballSpeedX;
-  ballY += ballSpeedY;
-  const position = paddle.getBoundingClientRect();
-  const continarposition = gameContainer.getBoundingClientRect();
-  // Wall Collision
-  if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
-    if (ballX < 0) {
-      ballX = 0;
-    } else if (ballX + ball.clientWidth > continarposition.width) {
-      ballX = continarposition.width - ball.clientWidth;
+  const start = document.getElementById("start");
+  if (!paused) {
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+    // Wall Collision
+    if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
+      if (ballX < 0) {
+        ballX = 0;
+      } else if (ballX + ball.clientWidth > continarposition.width) {
+        ballX = continarposition.width - ball.clientWidth;
+      }
+      ballSpeedX = -ballSpeedX;
     }
-    ballSpeedX = -ballSpeedX;
-  }
-  if (ballY < 0) ballSpeedY = -ballSpeedY;
+    if (ballY < 0) ballSpeedY = -ballSpeedY;
 
-  // Paddle Collision
-  if (ballY + ball.clientWidth >= continarposition.height - position.height) {
-    if (
-      ballX + ball.clientWidth >= paddleX &&
-      ballX < paddleX + paddle.clientWidth
-    ) {
-      ballSpeedY = -ballSpeedY;
+    // Paddle Collision
+    if (ballY + ball.clientWidth >= continarposition.height - position.height) {
+      if (
+        ballX + ball.clientWidth >= paddleX &&
+        ballX < paddleX + paddle.clientWidth
+      ) {
+        ballSpeedY = -ballSpeedY;
 
-      // Adjust ball angle based on paddle hit position
-      const paddleCenter = paddleX + 50;
-      const deltaX = ballX - paddleCenter;
-      const angle = deltaX / 50;
-      ballSpeedX = angle * 5;
-    } else if (ballY + ball.clientWidth >= continarposition.height) {
-      lives--;
-      paused = true;
-      if (lives === 0) {
-        lose(Losemuen);
-      } else {
-        initGame();
+        // Adjust ball angle based on paddle hit position
+        const paddleCenter = paddleX + 50;
+        const deltaX = ballX - paddleCenter;
+        const angle = deltaX / 50;
+        ballSpeedX = angle * 5;
+      } else if (ballY + ball.clientWidth >= continarposition.height) {
+        lives--;
+        paused = true;
+        if (lives === 0) {
+          lose(Losemuen);
+        } else {
+          initGame();
+        }
       }
     }
-  }
 
-  // Paddle Movement
-  if (rightPressed && paddleX <= continarposition.width - position.width - 2)
-    paddleX += 7;
-  if (leftPressed && paddleX > 1) paddleX -= 7;
+    // Paddle Movement
+    if (rightPressed && paddleX <= continarposition.width - position.width - 2)
+      paddleX += 7;
+    if (leftPressed && paddleX > 1) paddleX -= 7;
+  } else if (beforstart && !start) {
+    MoveBeforStart();
+  }
 }
 
 // Game Update Loop
 function update() {
-  if (!paused) {
-    playGame();
-    collisionDetection();
-  }
+  playGame();
+  collisionDetection();
+  updateScoreAndLives();
   drawBall();
   drawPaddle();
   requestAnimationFrame(update);
