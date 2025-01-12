@@ -20,6 +20,7 @@ const divTime = document.getElementById("timer");
 // Game Variables
 const position = paddle.getBoundingClientRect();
 const continarposition = gameContainer.getBoundingClientRect();
+
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
 let paddleX;
@@ -95,7 +96,7 @@ function Start() {
 }
 
 // Create Bricks
-function createBricks() {
+async function createBricks() {
   bricks = [];
   bricksContainer.innerHTML = ""; // Clear previous bricks
   for (let c = 0; c < brickColumnCount; c++) {
@@ -124,7 +125,7 @@ function createBricks() {
 }
 
 // Update Score and Lives Display
-function updateScoreAndLives() {
+async function updateScoreAndLives() {
   scoreDisplay.textContent = `Score: ${score}`;
   livesDisplay.textContent = `Lives: ${lives}`;
 }
@@ -208,6 +209,7 @@ function Restart() {
   divTime.innerText = `Time: ${minute}:${second}`;
   totalStates = 0;
   iswin = 0;
+  drawBricks();
   updateScoreAndLives();
 }
 
@@ -220,43 +222,39 @@ document.addEventListener("keydown", handleKeyDown);
 document.addEventListener("keyup", handleKeyUp);
 
 // Draw Ball
-function drawBall() {
+async function drawBall() {
   ball.style.left = ballX + "px";
   ball.style.top = ballY + "px";
 }
 
 // Draw Paddle
-function drawPaddle() {
+async function drawPaddle() {
   paddle.style.left = paddleX + "px";
 }
 
 // Draw Bricks
 async function drawBricks() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const brick = bricks[c][r];
-      brick.element.style.left =
+  bricks.forEach((column) => {
+    column.forEach((brick) => {
+      const c = brick.element.dataset.column;
+      const r = brick.element.dataset.row;
+      const xOffset =
         c *
-          (bricksContainer.clientWidth * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
-      brick.element.style.top =
+        (bricksContainer.clientWidth * 0.1 + bricksContainer.clientWidth / 20);
+      const yOffset =
         r *
-          (bricksContainer.clientHeight * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
+        (bricksContainer.clientHeight * 0.1 + bricksContainer.clientWidth / 20);
+      brick.element.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
       brick.element.style.display = brick.status !== 0 ? "block" : "none";
-    }
-  }
+    });
+  });
 }
 
-function collisionDetection() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const brick = bricks[c][r];
+async function collisionDetection() {
+  bricks.forEach((column) => {
+    column.forEach((brick) => {
       const brickPosition = brick.element.getBoundingClientRect();
       const ballPosition = ball.getBoundingClientRect();
-
       if (brick.status !== 0) {
         if (
           ballPosition.right >= brickPosition.left &&
@@ -299,8 +297,8 @@ function collisionDetection() {
         }
       }
       brick.last = false;
-    }
-  }
+    });
+  });
 }
 
 const fpsDisplay = document.createElement("div");
