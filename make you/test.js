@@ -209,7 +209,7 @@ function Restart() {
   divTime.innerText = `Time: ${minute}:${second}`;
   totalStates = 0;
   iswin = 0;
-  drawBricks();
+  // drawBricks();
   updateScoreAndLives();
 }
 
@@ -282,13 +282,16 @@ async function collisionDetection() {
             ballSpeedY = -ballSpeedY;
           }
           brick.status -= 1;
+          if (brick.status == 0) {
+            brick.element.style.display = "none";
+          }
           score++;
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
           iswin++;
           // drawBricks();
-          drawBricks();
+          // drawBricks();
           if (iswin == totalStates) {
             lose(Win);
             paused = true;
@@ -314,30 +317,18 @@ let lastFrameTime = performance.now();
 let frameCount = 0;
 let fps = 0;
 
-function updateFPSDisplay() {
-  fpsDisplay.innerText = `FPS: ${Math.round(fps)}`;
-  requestAnimationFrame(updateFPSDisplay);
-}
-
 function calculateFPS(now) {
-  // frameCount++;
-  // const now = performance.now();
-
   const elapsedTime = (now - lastFrameTime) / 1000;
 
   fps = 1 / elapsedTime;
-  // frameCount = 0;
+  fpsDisplay.innerText = `FPS: ${Math.round(fps)}`;
   lastFrameTime = now;
   requestAnimationFrame(calculateFPS);
 }
-
-// Start the FPS calculation
 calculateFPS();
 
-updateFPSDisplay();
-
 // Main Game Logic
-function playGame() {
+async function playGame() {
   const start = document.getElementById("start");
   if (!paused) {
     ballX += ballSpeedX;
