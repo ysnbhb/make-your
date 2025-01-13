@@ -42,7 +42,6 @@ let lastTimeUpdate = 0;
 
 function showTime(timestamp) {
   if (paused) {
-    requestAnimationFrame(showTime);
     return;
   }
 
@@ -60,11 +59,7 @@ function showTime(timestamp) {
     }
     time--;
   }
-
-  requestAnimationFrame(showTime);
 }
-
-requestAnimationFrame(showTime);
 
 window.addEventListener("resize", () => {
   drawBricks();
@@ -135,9 +130,6 @@ function handleKeyDown(e) {
   const start = document.getElementById("start");
   if (e.key === "ArrowRight") {
     rightPressed = true;
-    if (beforstart && !start) {
-      MoveBeforStart();
-    }
   }
   if (e.key === "ArrowLeft") {
     leftPressed = true;
@@ -286,9 +278,10 @@ async function collisionDetection() {
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
+          if (brick.status == 0) {
+            brick.element.style.display = "none";
+          }
           iswin++;
-          drawBricks();
-          // drawBricks();
           if (iswin == totalStates) {
             lose(Win);
             paused = true;
@@ -319,9 +312,7 @@ function calculateFPS(now) {
   fps = 1 / elapsedTime;
   fpsDisplay.innerText = `FPS: ${Math.round(fps)}`;
   lastFrameTime = now;
-  requestAnimationFrame(calculateFPS);
 }
-calculateFPS();
 
 // Main Game Logic
 async function playGame() {
@@ -374,7 +365,9 @@ async function playGame() {
 }
 
 // Game Update Loop
-function update() {
+function update(now) {
+  showTime(now);
+  calculateFPS(now);
   playGame();
   collisionDetection();
   updateScoreAndLives();
