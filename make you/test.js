@@ -282,15 +282,12 @@ async function collisionDetection() {
             ballSpeedY = -ballSpeedY;
           }
           brick.status -= 1;
-          if (brick.status == 0) {
-            brick.element.style.display = "none";
-          }
           score++;
           ballSpeedX *= 1.01;
           ballSpeedY *= 1.01;
           brick.last = true;
           iswin++;
-          // drawBricks();
+          drawBricks();
           // drawBricks();
           if (iswin == totalStates) {
             lose(Win);
@@ -314,7 +311,6 @@ fpsDisplay.style.padding = "5px";
 fpsDisplay.style.fontFamily = "Arial";
 document.body.appendChild(fpsDisplay);
 let lastFrameTime = performance.now();
-let frameCount = 0;
 let fps = 0;
 
 function calculateFPS(now) {
