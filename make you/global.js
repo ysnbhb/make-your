@@ -1,4 +1,4 @@
-import { Continue, RestartBtn } from "./test.js";
+import { Continue, RestartBtn } from "./make.js";
 
 export const pauseMue = `
     <div>Choose your Option</div>

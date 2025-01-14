@@ -1,207 +1,384 @@
+import {
+  DivstartGame,
+  lose,
+  Losemuen,
+  pauseMue,
+  showmine,
+  timeOut,
+  Win,
+} from "./global.js";
+
+// DOM Elements
 const ball = document.getElementById("ball");
 const paddle = document.getElementById("paddle");
 const scoreDisplay = document.getElementById("score");
 const livesDisplay = document.getElementById("lives");
 const bricksContainer = document.getElementById("bricksContainer");
+const gameContainer = document.getElementById("gameContainer");
+const divTime = document.getElementById("timer");
+
+// Game Variables
+const position = paddle.getBoundingClientRect();
+const continarposition = gameContainer.getBoundingClientRect();
 
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
 let paddleX;
-let rightPressed, leftPressed;
-let score;
-let lives;
-
-function getRandomColor() {
-  const letters = "0123456789ABCDEF";
-  let color = "#";
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-}
-// function getRandomColor() {
-//   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
-//   return colors[Math.floor(Math.random() * colors.length)];
-// }
-
-function Init() {
-  (ballX = 240), (ballY = 290);
-  (ballSpeedX = 2), (ballSpeedY = -2);
-  paddleX = 200;
-  (rightPressed = false), (leftPressed = false);
-  score = 0;
-  lives = 3;
-}
-
-Init();
-
+let rightPressed = false,
+  leftPressed = false;
+let score = 0;
+let lives = 3;
+let paused = true;
+let beforstart = true;
+let totalStates = 0;
+let iswin = 0;
+const speedBD = 9
 const brickRowCount = 5;
 const brickColumnCount = 7;
-const brickWidth = bricksContainer.clientWidth * 0.1;
-const brickHeight = bricksContainer.clientHeight * 0.1;
-const brickPadding = 30;
 let bricks = [];
+let time = 90;
 
-function createBrak() {
+let lastTimeUpdate = 0;
+
+function showTime(timestamp) {
+  if (paused) {
+    return;
+  }
+
+  if (timestamp - lastTimeUpdate >= 1000) {
+    lastTimeUpdate = timestamp;
+    const second = (time % 60).toString().padStart(2, "0");
+    const minute = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
+    divTime.innerText = `Time: ${minute}:${second}`;
+    if (time === 0) {
+      paused = true;
+      lose(timeOut);
+      return;
+    }
+    time--;
+  }
+}
+
+window.addEventListener("resize", () => {
+  drawBricks();
+});
+
+function getRandomColor() {
+  const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
+  return colors[Math.floor(Math.random() * colors.length)];
+}
+
+function initGame() {
+  ballX = gameContainer.clientWidth / 2;
+  ballY = gameContainer.clientHeight - 40;
+  ballSpeedX = -2;
+  ballSpeedY = -2;
+  paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
+  paddle.style.left = paddleX + "px";
+  beforstart = true;
+  updateScoreAndLives();
+}
+
+function Start() {
+  const start = document.getElementById("start");
+  start.addEventListener("click", () => {
+    const minue = document.getElementById("PusedMine");
+    minue.style.display = "none";
+    minue.innerHTML = "";
+  });
+}
+
+// Create Bricks
+async function createBricks() {
+  bricks = [];
+  bricksContainer.innerHTML = ""; // Clear previous bricks
   for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
       const brick = document.createElement("div");
       brick.classList.add("brick");
-      brick.style.left = c * (70 + 30) + "px";
-      brick.style.top = r * (30 + 30) + "px";
+      brick.style.left =
+        c *
+        (bricksContainer.clientWidth * 0.1 +
+          bricksContainer.clientWidth / 20) +
+        "px";
+      brick.style.top =
+        r *
+        (bricksContainer.clientHeight * 0.1 +
+          bricksContainer.clientWidth / 20) +
+        "px";
       brick.style.backgroundColor = getRandomColor();
-      brick.hitCount = 0;
       bricksContainer.appendChild(brick);
-      bricks[c][r] = { element: brick, status: 1 };
+      const status = 1;
+      totalStates += status;
+      const last = false;
+      bricks[c][r] = { element: brick, status: status, last: last };
     }
   }
 }
 
-createBrak();
+// Update Score and Lives Display
+async function updateScoreAndLives() {
+  scoreDisplay.textContent = `Score: ${score}`;
+  livesDisplay.textContent = `Lives: ${lives}`;
+}
 
-let puese = false;
+// Handle Keyboard Input
+function handleKeyDown(e) {
+  const start = document.getElementById("start");
+  if (e.key === "ArrowRight") {
+    rightPressed = true;
+  }
+  if (e.key === "ArrowLeft") {
+    leftPressed = true;
+  }
+  if (e.key === " ") {
+    if (beforstart && !start) {
+      paused = !paused;
+      beforstart = false;
+    }
+  }
+  if (e.key == "p" || e.key == "Escape") {
+    if (!beforstart && lives > 0 && time > 0 && iswin != totalStates) {
+      paused = true;
+      showmine(pauseMue);
+    }
+  }
+}
 
-document.addEventListener("keydown", function (e) {
-  if (e.key === "ArrowRight") rightPressed = true;
-  if (e.key === "ArrowLeft") leftPressed = true;
-  if (e.key == "i") puese = true;
-  if (e.key == "y") puese = false;
-});
-document.addEventListener("keyup", function (e) {
+function MoveBeforStart() {
+  const continarposition = gameContainer.getBoundingClientRect();
+  const position = paddle.getBoundingClientRect();
+
+  if (rightPressed && paddleX <= continarposition.width - position.width - 2) {
+    paddleX += speedBD;
+    ballX += speedBD;
+  }
+  if (leftPressed && paddleX > 1) {
+    paddleX -= speedBD;
+    ballX -= speedBD;
+  }
+}
+
+export function Continue(minue) {
+  const div = document.getElementById("Continue");
+  div.addEventListener("click", () => {
+    minue.style.display = "none";
+    paused = false;
+  });
+}
+
+// function Test() {
+//   test.innerText = (Number(test.innerText) + 1) % 100;
+//   requestAnimationFrame(Test);
+// }
+
+// requestAnimationFrame(Test);
+
+export function RestartBtn(minue) {
+  const div = document.getElementById("Restart");
+  div.addEventListener("click", () => {
+    // minue.style.display = "none";
+    Restart();
+
+    minue.innerHTML = DivstartGame;
+    Start();
+  });
+}
+
+function Restart() {
+  initGame();
+  createBricks();
+  lives = 3;
+  score = 0;
+  time = 90;
+  const second = (time % 60).toString().padStart(2, "0");
+  const minute = Math.floor(time / 60)
+    .toString()
+    .padStart(2, "0");
+  divTime.innerText = `Time: ${minute}:${second}`;
+  totalStates = 0;
+  iswin = 0;
+  // drawBricks();
+  updateScoreAndLives();
+}
+
+function handleKeyUp(e) {
   if (e.key === "ArrowRight") rightPressed = false;
   if (e.key === "ArrowLeft") leftPressed = false;
-});
+}
 
-function drawBall() {
+document.addEventListener("keydown", handleKeyDown);
+document.addEventListener("keyup", handleKeyUp);
+
+// Draw Ball
+async function drawBall() {
   ball.style.left = ballX + "px";
   ball.style.top = ballY + "px";
 }
 
-function drawPaddle() {
+// Draw Paddle
+async function drawPaddle() {
   paddle.style.left = paddleX + "px";
 }
 
-function drawBricks() {
-  bricks.forEach((col) => {
-    col.forEach((brick) => {
-      if (brick.status === 1) {
-        brick.element.style.display = "block";
-      } else {
-        brick.element.style.display = "none";
-      }
+// Draw Bricks
+async function drawBricks() {
+  bricks.forEach((column) => {
+    column.forEach((brick) => {
+      const c = brick.element.dataset.column;
+      const r = brick.element.dataset.row;
+      const xOffset =
+        c *
+        (bricksContainer.clientWidth * 0.1 + bricksContainer.clientWidth / 20);
+      const yOffset =
+        r *
+        (bricksContainer.clientHeight * 0.1 + bricksContainer.clientWidth / 20);
+      brick.element.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
+      brick.element.style.display = brick.status !== 0 ? "block" : "none";
     });
   });
 }
 
-// let destroyedBricks = 0;
-function collisionDetection() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      let brick = bricks[c][r];
-      if (brick.status === 1) {
+async function collisionDetection() {
+  bricks.forEach((column) => {
+    column.forEach((brick) => {
+      const brickPosition = brick.element.getBoundingClientRect();
+      const ballPosition = ball.getBoundingClientRect();
+      if (brick.status !== 0) {
         if (
-          ballX + 20 > brick.element.offsetLeft &&
-          ballX < brick.element.offsetLeft + 70 &&
-          ballY + 20 > brick.element.offsetTop &&
-          ballY < brick.element.offsetTop + 30
+          ballPosition.right >= brickPosition.left &&
+          ballPosition.left <= brickPosition.right &&
+          ballPosition.bottom >= brickPosition.top &&
+          ballPosition.top <= brickPosition.bottom
         ) {
-          ballSpeedY = -ballSpeedY;
-          brick.status = 0;
-          score++;
-          scoreDisplay.textContent = `Score: ${score}`;
-          // ++vetess 17 brick
-          //  if (destroyedBricks % 17 === 0) {
-          //     ballSpeedX *= 1.0; // 10%
-          //     ballSpeedY *= 1.0; // 10%
-          // }
-          ballSpeedX *= 1.001;
-          ballSpeedY *= 1.001;
-          if (score === brickRowCount * brickColumnCount) {
-            alert("YOU WIN, CONGRATULATIONS!");
-            document.location.reload();
+          if (brick.last) {
+            return;
           }
+          // Determine collision side based on overlap
+          const overlapX = Math.min(
+            ballPosition.right - brickPosition.left,
+            brickPosition.right - ballPosition.left
+          );
+          const overlapY = Math.min(
+            ballPosition.bottom - brickPosition.top,
+            brickPosition.bottom - ballPosition.top
+          );
 
-          //     // frifyi jami3 zawaya ball
-          // if (ballX + 20 > brick.element.offsetLeft && ballX < brick.element.offsetLeft + 60 &&
-          //     ballY + 20 > brick.element.offsetTop && ballY < brick.element.offsetTop + 20) {
-          //         // 3akse zawiyat ball
-          //     if (ballY + 20 - ballSpeedY <= brick.element.offsetTop) {
-          //         ballSpeedY = -ballSpeedY; // istidam mlfo9
-          //     } else if (ballY - ballSpeedY >= brick.element.offsetTop + 20) {
-          //         ballSpeedY = -ballSpeedY; // istidam mlthet
-          //     } else {
-          //         ballSpeedX = -ballSpeedX; // istidam men janibayn
-          //     }
+          // Reverse ball direction based on the smaller overlap (more direct collision)
+          if (overlapX < overlapY) {
+            ballSpeedX = -ballSpeedX;
+          } else {
+            ballSpeedY = -ballSpeedY;
+          }
+          brick.status -= 1;
+          score++;
+          ballSpeedX *= 1.01;
+          ballSpeedY *= 1.01;
+          brick.last = true;
+          if (brick.status == 0) {
+            brick.element.style.display = "none";
+          }
+          iswin++;
+          if (iswin == totalStates) {
+            lose(Win);
+            paused = true;
+          }
+          return;
+        }
+      }
+      brick.last = false;
+    });
+  });
+}
 
-          //     brick.status = 0; // brick
-          //     score++;
-          //     scoreDisplay.textContent = `Score: ${score}`;
+const fpsDisplay = document.createElement("div");
+fpsDisplay.style.position = "fixed";
+fpsDisplay.style.top = "10px";
+fpsDisplay.style.left = "10px";
+fpsDisplay.style.color = "white";
+fpsDisplay.style.background = "black";
+fpsDisplay.style.padding = "5px";
+fpsDisplay.style.fontFamily = "Arial";
+document.body.appendChild(fpsDisplay);
+let lastFrameTime = performance.now();
+let fps = 0;
 
-          //     if (score === brickRowCount * brickColumnCount) {
-          //         alert("YOU WIN, CONGRATULATIONS!");
-          //         document.location.reload();
-          //     }
+function calculateFPS(now) {
+  const elapsedTime = (now - lastFrameTime) / 1000;
+
+  fps = 1 / elapsedTime;
+  fpsDisplay.innerText = `FPS: ${Math.round(fps)}`;
+  lastFrameTime = now;
+}
+
+// Main Game Logic
+async function playGame() {
+  const start = document.getElementById("start");
+  if (!paused) {
+    ballX += ballSpeedX;
+    ballY += ballSpeedY;
+    // Wall Collision
+    if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
+      if (ballX < 0) {
+        ballX = 0;
+      } else if (ballX + ball.clientWidth > continarposition.width) {
+        ballX = continarposition.width - ball.clientWidth;
+      }
+      ballSpeedX = -ballSpeedX;
+    }
+    if (ballY <= 0) ballSpeedY = -ballSpeedY;
+
+    // Paddle Collision
+    if (ballY + ball.clientWidth >= continarposition.height - position.height) {
+      if (
+        ballX + ball.clientWidth >= paddleX &&
+        ballX < paddleX + paddle.clientWidth
+      ) {
+        ballY = continarposition.height - position.height - ball.clientHeight;
+        ballSpeedY = -ballSpeedY;
+
+        // Adjust ball angle based on paddle hit position
+        const paddleCenter = paddleX + paddle.clientWidth / 2;
+        const deltaX = ballX - paddleCenter;
+        const angle = deltaX / (paddle.clientWidth / 2);
+        ballSpeedX = angle * 5;
+      } else if (ballY + ball.clientWidth >= continarposition.height) {
+        lives--;
+        paused = true;
+        if (lives === 0) {
+          lose(Losemuen);
+        } else {
+          initGame();
         }
       }
     }
+
+    // Paddle Movement
+    if (rightPressed && paddleX <= continarposition.width - position.width - 2)
+      paddleX += speedBD;
+    if (leftPressed && paddleX > 1) paddleX -= speedBD;
+  } else if (beforstart && !start) {
+    MoveBeforStart();
   }
 }
 
-function Play() {
-  ballX += ballSpeedX;
-  ballY += ballSpeedY;
-  // tasadom jodran
-  //   if (puese) return;
-  if (ballX + ballSpeedX > 680 - 20 || ballX + ballSpeedX < 0)
-    ballSpeedX = -ballSpeedX;
-  if (ballY + ballSpeedY < 0) ballSpeedY = -ballSpeedY;
-  // tasadom paddle
-  else if (ballY + ballSpeedY > 500 - 20) {
-    if (ballX + 20 > paddleX && ballX < paddleX + 100) {
-      ballSpeedY = -ballSpeedY; // 3akes tijah ball
-
-      // const deltaX = ballX - (paddleX + 37.5); // massafa ma3a centr paddle
-      // ballSpeedX = deltaX * 0.2;
-
-      const paddleCenter = paddleX + 50;
-      const deltaX = ballX - paddleCenter;
-      const angle = deltaX / 50; // 7isab zawiyat tasadom
-      ballSpeedX = angle * 5;
-    } else {
-      lives--;
-      livesDisplay.textContent = `Lives: ${lives}`;
-      createBrak();
-      puese = true;
-      Init();
-      if (lives === 0) {
-        alert("GAME OVER");
-        document.location.reload();
-      } else {
-        // dabet ball
-        ballX = 240;
-        ballY = 290;
-        ballSpeedX = 6;
-        ballSpeedY = -6;
-        paddleX = 200;
-      }
-    }
-  }
-  // harakat paddle
-  if (rightPressed && paddleX < 680 - 75) paddleX += 7;
-  if (leftPressed && paddleX > 0) paddleX -= 7;
-}
-
-function update() {
-  if (!puese) {
-    Play();
-    drawBall();
-    drawPaddle();
-    drawBricks();
-    collisionDetection();
-  }
+// Game Update Loop
+function update(now) {
+  showTime(now);
+  calculateFPS(now);
+  playGame();
+  collisionDetection();
+  updateScoreAndLives();
+  drawBall();
+  drawPaddle();
   requestAnimationFrame(update);
 }
 
-// setInterval(update, 10);
+// Start Game
+initGame();
+createBricks();
+Start();
 requestAnimationFrame(update);
