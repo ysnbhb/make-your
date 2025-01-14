@@ -24,27 +24,17 @@ body {
   max-width: 680px;
   transform: translate(0, 10px);
 }
-#test {
-  font-size: 1.02px;
-  position: absolute;
-  top: 10px;
-}
+
 #paddle {
   position: absolute;
   bottom: 0px;
-  /* left: 50%; */
   width: 20%;
   height: 20px;
   background-color: rgb(1, 1, 114);
-  /* margin-left: -37.5px; */
   border: 2px solid #3357ff;
   border-radius: 10px;
 }
 
-#ball,
-#paddle {
-  will-change: transform;
-}
 #ball {
   position: absolute;
   bottom: 20px;
@@ -75,7 +65,6 @@ body {
   position: absolute;
   width: 10%;
   aspect-ratio: 2 / 1;
-  background-color: #33ff57;
 }
 
 #score,

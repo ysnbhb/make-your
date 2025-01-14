@@ -32,7 +32,7 @@ let paused = true;
 let beforstart = true;
 let totalStates = 0;
 let iswin = 0;
-const speedBD = 9
+const speedBD = 9;
 const brickRowCount = 5;
 const brickColumnCount = 7;
 let bricks = [];
@@ -101,13 +101,13 @@ async function createBricks() {
       brick.classList.add("brick");
       brick.style.left =
         c *
-        (bricksContainer.clientWidth * 0.1 +
-          bricksContainer.clientWidth / 20) +
+          (bricksContainer.clientWidth * 0.1 +
+            bricksContainer.clientWidth / 20) +
         "px";
       brick.style.top =
         r *
-        (bricksContainer.clientHeight * 0.1 +
-          bricksContainer.clientWidth / 20) +
+          (bricksContainer.clientHeight * 0.1 +
+            bricksContainer.clientWidth / 20) +
         "px";
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
@@ -170,19 +170,10 @@ export function Continue(minue) {
   });
 }
 
-// function Test() {
-//   test.innerText = (Number(test.innerText) + 1) % 100;
-//   requestAnimationFrame(Test);
-// }
-
-// requestAnimationFrame(Test);
-
 export function RestartBtn(minue) {
   const div = document.getElementById("Restart");
   div.addEventListener("click", () => {
-    // minue.style.display = "none";
     Restart();
-
     minue.innerHTML = DivstartGame;
     Start();
   });
@@ -201,7 +192,6 @@ function Restart() {
   divTime.innerText = `Time: ${minute}:${second}`;
   totalStates = 0;
   iswin = 0;
-  // drawBricks();
   updateScoreAndLives();
 }
 
@@ -226,18 +216,20 @@ async function drawPaddle() {
 
 // Draw Bricks
 async function drawBricks() {
-  bricks.forEach((column) => {
-    column.forEach((brick) => {
-      const c = brick.element.dataset.column;
-      const r = brick.element.dataset.row;
-      const xOffset =
+  bricks.forEach((column, c) => {
+    column.forEach((brick, r) => {
+      // const c = brick.element.dataset.column;
+      // const r = brick.element.dataset.row;
+      brick.element.style.left =
         c *
-        (bricksContainer.clientWidth * 0.1 + bricksContainer.clientWidth / 20);
-      const yOffset =
+          (bricksContainer.clientWidth * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
+      brick.element.style.top =
         r *
-        (bricksContainer.clientHeight * 0.1 + bricksContainer.clientWidth / 20);
-      brick.element.style.transform = `translate(${xOffset}px, ${yOffset}px)`;
-      brick.element.style.display = brick.status !== 0 ? "block" : "none";
+          (bricksContainer.clientHeight * 0.1 +
+            bricksContainer.clientWidth / 20) +
+        "px";
     });
   });
 }
