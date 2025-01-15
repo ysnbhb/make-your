@@ -184,9 +184,19 @@ export function RestartBtn(minue) {
   });
 }
 
+async function ReDwar() {
+  bricks.forEach((clome) => {
+    clome.forEach((brick) => {
+      brick.element.style.display = "";
+      brick.status = 1;
+    });
+  });
+}
+
 function Restart() {
-  createBricks();
+  // createBricks();
   initGame();
+  ReDwar();
   lives = 3;
   score = 0;
   time = 90;
@@ -219,6 +229,7 @@ async function drawPaddle() {
 }
 
 async function collisionDetection() {
+  if (paused) return;
   bricks.forEach((column) => {
     column.forEach((brick) => {
       const brickPosition = brick.react;
