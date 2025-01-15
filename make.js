@@ -125,6 +125,7 @@ async function createBricks() {
         last: last,
         react: react,
       };
+      console.log(bricks[c][r]);
     }
   }
 }
@@ -187,8 +188,8 @@ export function RestartBtn(minue) {
 }
 
 function Restart() {
-  initGame();
   createBricks();
+  initGame();
   lives = 3;
   score = 0;
   time = 90;
