@@ -1,4 +1,5 @@
 import {
+  debounce,
   DivstartGame,
   lose,
   Losemuen,
@@ -18,9 +19,6 @@ const gameContainer = document.getElementById("gameContainer");
 const divTime = document.getElementById("timer");
 
 // Game Variables
-const position = paddle.getBoundingClientRect();
-const continarposition = gameContainer.getBoundingClientRect();
-
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
 let paddleX;
@@ -61,9 +59,12 @@ function showTime(timestamp) {
   }
 }
 
-window.addEventListener("resize", () => {
-  drawBricks();
-});
+window.addEventListener(
+  "resize",
+  debounce(() => {
+    window.location.reload();
+  }, 200)
+);
 
 function getRandomColor() {
   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
@@ -214,26 +215,6 @@ async function drawPaddle() {
   paddle.style.left = paddleX + "px";
 }
 
-// Draw Bricks
-async function drawBricks() {
-  bricks.forEach((column, c) => {
-    column.forEach((brick, r) => {
-      // const c = brick.element.dataset.column;
-      // const r = brick.element.dataset.row;
-      brick.element.style.left =
-        c *
-          (bricksContainer.clientWidth * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
-      brick.element.style.top =
-        r *
-          (bricksContainer.clientHeight * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
-    });
-  });
-}
-
 async function collisionDetection() {
   bricks.forEach((column) => {
     column.forEach((brick) => {
@@ -309,6 +290,7 @@ function calculateFPS(now) {
 // Main Game Logic
 async function playGame() {
   const start = document.getElementById("start");
+  const continarposition = gameContainer.getBoundingClientRect();
   if (!paused) {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -322,8 +304,8 @@ async function playGame() {
       ballSpeedX = -ballSpeedX;
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
+    const position = paddle.getBoundingClientRect();
 
-    // Paddle Collision
     if (ballY + ball.clientWidth >= continarposition.height - position.height) {
       if (
         ballX + ball.clientWidth >= paddleX &&

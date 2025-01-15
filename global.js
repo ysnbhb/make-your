@@ -52,3 +52,13 @@ export function showmine(div) {
   Continue(minue);
   RestartBtn(minue);
 }
+
+export function debounce(func, wait) {
+  let timer;
+  return function (...arg) {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      func(...arg);
+    }, wait);
+  };
+}
