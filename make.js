@@ -19,6 +19,8 @@ const gameContainer = document.getElementById("gameContainer");
 const divTime = document.getElementById("timer");
 
 // Game Variables
+const continarposition = gameContainer.getBoundingClientRect();
+const position = paddle.getBoundingClientRect();
 let ballX, ballY;
 let ballSpeedX, ballSpeedY;
 let paddleX;
@@ -73,7 +75,8 @@ function getRandomColor() {
 
 function initGame() {
   ballX = gameContainer.clientWidth / 2;
-  ballY = gameContainer.clientHeight - 40;
+  ballY =
+    gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
   ballSpeedX = -2;
   ballSpeedY = -2;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
@@ -115,7 +118,13 @@ async function createBricks() {
       const status = 1;
       totalStates += status;
       const last = false;
-      bricks[c][r] = { element: brick, status: status, last: last };
+      const react = brick.getBoundingClientRect();
+      bricks[c][r] = {
+        element: brick,
+        status: status,
+        last: last,
+        react: react,
+      };
     }
   }
 }
@@ -150,9 +159,6 @@ function handleKeyDown(e) {
 }
 
 function MoveBeforStart() {
-  const continarposition = gameContainer.getBoundingClientRect();
-  const position = paddle.getBoundingClientRect();
-
   if (rightPressed && paddleX <= continarposition.width - position.width - 2) {
     paddleX += speedBD;
     ballX += speedBD;
@@ -218,7 +224,7 @@ async function drawPaddle() {
 async function collisionDetection() {
   bricks.forEach((column) => {
     column.forEach((brick) => {
-      const brickPosition = brick.element.getBoundingClientRect();
+      const brickPosition = brick.react;
       const ballPosition = ball.getBoundingClientRect();
       if (brick.status !== 0) {
         if (
@@ -290,7 +296,6 @@ function calculateFPS(now) {
 // Main Game Logic
 async function playGame() {
   const start = document.getElementById("start");
-  const continarposition = gameContainer.getBoundingClientRect();
   if (!paused) {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -304,8 +309,6 @@ async function playGame() {
       ballSpeedX = -ballSpeedX;
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
-    const position = paddle.getBoundingClientRect();
-
     if (ballY + ball.clientWidth >= continarposition.height - position.height) {
       if (
         ballX + ball.clientWidth >= paddleX &&
@@ -331,7 +334,7 @@ async function playGame() {
     }
 
     // Paddle Movement
-    if (rightPressed && paddleX <= continarposition.width - position.width - 2)
+    if (rightPressed && paddleX + position.width < continarposition.width - 2)
       paddleX += speedBD;
     if (leftPressed && paddleX > 1) paddleX -= speedBD;
   } else if (beforstart && !start) {

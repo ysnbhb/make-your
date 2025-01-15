@@ -38,7 +38,6 @@ body {
 #ball {
   position: absolute;
   bottom: 20px;
-  left: 50%;
   width: 3%;
   height: 4%;
   background-color: #3357ff;
