@@ -80,7 +80,7 @@ function initGame() {
   ballSpeedX = -2;
   ballSpeedY = -2;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
-  paddle.style.left = paddleX + "px";
+  paddle.style.transform = `translate(${paddleX}px, 0px)`;
   beforstart = true;
   updateScoreAndLives();
 }
@@ -98,21 +98,19 @@ function Start() {
 async function createBricks() {
   bricks = [];
   bricksContainer.innerHTML = ""; // Clear previous bricks
+
   for (let c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (let r = 0; r < brickRowCount; r++) {
       const brick = document.createElement("div");
       brick.classList.add("brick");
-      brick.style.left =
+      const x =
         c *
-          (bricksContainer.clientWidth * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
-      brick.style.top =
+        (bricksContainer.clientWidth * 0.1 + bricksContainer.clientWidth / 20);
+      const y =
         r *
-          (bricksContainer.clientHeight * 0.1 +
-            bricksContainer.clientWidth / 20) +
-        "px";
+        (bricksContainer.clientHeight * 0.1 + bricksContainer.clientWidth / 20);
+      brick.style.transform = `translate(${x}px, ${y}px)`;
       brick.style.backgroundColor = getRandomColor();
       bricksContainer.appendChild(brick);
       const status = 1;
@@ -125,7 +123,6 @@ async function createBricks() {
         last: last,
         react: react,
       };
-      console.log(bricks[c][r]);
     }
   }
 }
@@ -213,13 +210,12 @@ document.addEventListener("keyup", handleKeyUp);
 
 // Draw Ball
 async function drawBall() {
-  ball.style.left = ballX + "px";
-  ball.style.top = ballY + "px";
+  ball.style.transform = `translate(${ballX}px, ${ballY}px)`;
 }
 
 // Draw Paddle
 async function drawPaddle() {
-  paddle.style.left = paddleX + "px";
+  paddle.style.transform = `translate(${paddleX}px, 0px)`;
 }
 
 async function collisionDetection() {
