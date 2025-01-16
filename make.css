@@ -1,3 +1,4 @@
+/* General Reset */
 * {
   margin: 0;
   padding: 0;
@@ -11,66 +12,95 @@ body {
   align-items: center;
   height: 100vh;
   margin: 0;
-  background-color: #c5c3c3;
+  background: linear-gradient(to bottom, #1a1a1a, #3a3a3a);
 }
 
+/* Game Container */
 #gameContainer {
   position: relative;
   width: calc(100% - 10px);
-  height: 500px;
-  background-color: #000;
-  border: 2px solid #030303;
+  height: 580px;
+  background: linear-gradient(to bottom, #111, #222);
+  border: 3px solid #444;
   overflow: hidden;
   max-width: 680px;
   transform: translate(0, 10px);
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
 }
 
+/* Timer */
+#timer {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+/* Paddle */
 #paddle {
   position: absolute;
   bottom: 0px;
   width: 20%;
   height: 20px;
-  background-color: rgb(1, 1, 114);
-  border: 2px solid #3357ff;
+  background: linear-gradient(45deg, #005bea, #00c6fb);
   border-radius: 10px;
+  border: 2px solid #0099ff;
+  box-shadow: 0 4px 8px rgba(0, 153, 255, 0.5);
 }
 
+/* Ball */
 #ball {
-  position: absolute;
   width: 3%;
   height: 4%;
-  background-color: #3357ff;
+  background: radial-gradient(circle, #ff6a00, #ff8c00);
   border-radius: 50%;
+  box-shadow: 0 4px 8px rgba(255, 102, 0, 0.7);
 }
 
+.info {
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+/* Bricks Container */
 #bricksContainer {
   position: absolute;
   top: 30px;
   left: 0;
   width: 100%;
   height: 240px;
+  margin-top: 10px;
 }
 
-#timer {
-  color: white;
-  position: absolute;
-  left: 50%;
-  top: calc(19% + 5px);
-  background: black;
-}
-
+/* Bricks */
 .brick {
   position: absolute;
   width: 10%;
   aspect-ratio: 2 / 1;
+  background: linear-gradient(to right, #ff6a00, #f0e130);
+  border: 1px solid #e0a700;
+  border-radius: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
+/* Score and Lives */
 #score,
 #lives {
   position: absolute;
-  top: 10px;
-  font-size: 16px;
-  color: #faf6f6;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 5px 10px;
+  border-radius: 5px;
+  top: 0;
 }
 
 #score {
@@ -81,6 +111,7 @@ body {
   right: 10px;
 }
 
+/* Pause Menu */
 .PusedMine {
   position: absolute;
   display: flex;
@@ -89,7 +120,7 @@ body {
   align-items: center;
   gap: 20px;
   margin: 50px auto;
-  background: black;
+  background: rgba(0, 0, 0, 0.9);
   width: 29%;
   height: auto;
   padding: 20px;
@@ -98,6 +129,8 @@ body {
   text-align: center;
   transform: translate(2%, -20%);
   z-index: 99;
+  border: 2px solid #444;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.7);
 }
 
 .PusedMine .button-container {
@@ -112,25 +145,27 @@ body {
   font-size: 16px;
   font-weight: bold;
   color: #fff;
-  background-color: #007bff;
+  background: linear-gradient(to right, #00b4db, #0083b0);
   border: none;
   border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s ease;
+  transition: background 0.3s ease, transform 0.2s ease;
   min-width: 120px;
   text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 132, 188, 0.7);
 }
 
 .PusedMine button:hover {
-  background-color: #0056b3;
+  background: linear-gradient(to right, #0083b0, #005f99);
   transform: scale(1.1);
 }
 
 .PusedMine button:active {
-  background-color: #003f7f;
+  background: linear-gradient(to right, #005f99, #004773);
   transform: scale(1.05);
 }
 
+/* Responsive Design */
 @media (max-width: 600px) {
   .PusedMine .button-container {
     flex-direction: column;

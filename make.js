@@ -74,7 +74,7 @@ function getRandomColor() {
 }
 
 function initGame() {
-  ballX = (gameContainer.clientWidth  - (ball.clientWidth /2 ))/ 2;
+  ballX = (gameContainer.clientWidth - ball.clientWidth / 2) / 2;
   ballY =
     gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
   ballSpeedX = -2;
@@ -184,15 +184,6 @@ export function RestartBtn(minue) {
   });
 }
 
-async function ReDwar() {
-  bricks.forEach((clome) => {
-    clome.forEach((brick) => {
-      brick.element.style.display = "";
-      brick.status = 1;
-    });
-  });
-}
-
 function Restart() {
   createBricks();
   initGame();
@@ -235,10 +226,10 @@ async function collisionDetection() {
       const ballPosition = ball.getBoundingClientRect();
       if (brick.status !== 0) {
         if (
-          ballPosition.right >= brickPosition.left &&
-          ballPosition.left <= brickPosition.right &&
-          ballPosition.bottom >= brickPosition.top &&
-          ballPosition.top <= brickPosition.bottom
+          ballPosition.right + ballSpeedX >= brickPosition.left &&
+          ballPosition.left + ballSpeedX <= brickPosition.right &&
+          ballPosition.bottom + ballSpeedY >= brickPosition.top &&
+          ballPosition.top + ballSpeedY <= brickPosition.bottom
         ) {
           if (brick.last) {
             return;
@@ -283,7 +274,7 @@ async function collisionDetection() {
 const fpsDisplay = document.createElement("div");
 fpsDisplay.style.position = "fixed";
 fpsDisplay.style.top = "10px";
-fpsDisplay.style.left = "10px";
+fpsDisplay.style.right = "10px";
 fpsDisplay.style.color = "white";
 fpsDisplay.style.background = "black";
 fpsDisplay.style.padding = "5px";
@@ -317,7 +308,7 @@ async function playGame() {
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
     if (
-      ballY + ball.clientHeight >=
+      ballY + ball.clientHeight + ballSpeedY >=
       continarposition.height - position.height
     ) {
       if (
@@ -366,6 +357,8 @@ function update(now) {
 
 // Start Game
 initGame();
+console.log(ballX, ballY);
+
 createBricks();
 Start();
 requestAnimationFrame(update);
