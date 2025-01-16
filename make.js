@@ -77,8 +77,8 @@ function initGame() {
   ballX = (gameContainer.clientWidth  - (ball.clientWidth /2 ))/ 2;
   ballY =
     gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
-  ballSpeedX = -4;
-  ballSpeedY = -4;
+  ballSpeedX = -2;
+  ballSpeedY = -2;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
   paddle.style.transform = `translate(${paddleX}px, 0px)`;
   beforstart = true;
@@ -194,9 +194,8 @@ async function ReDwar() {
 }
 
 function Restart() {
-  // createBricks();
+  createBricks();
   initGame();
-  ReDwar();
   lives = 3;
   score = 0;
   time = 90;
@@ -266,7 +265,7 @@ async function collisionDetection() {
           ballSpeedY *= 1.01;
           brick.last = true;
           if (brick.status == 0) {
-            brick.element.style.display = "none";
+            brick.element.remove();
           }
           iswin++;
           if (iswin == totalStates) {
