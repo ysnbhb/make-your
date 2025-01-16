@@ -317,10 +317,13 @@ async function playGame() {
       ballSpeedX = -ballSpeedX;
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
-    if (ballY + ball.clientWidth >= continarposition.height - position.height) {
+    if (
+      ballY + ball.clientHeight >=
+      continarposition.height - position.height
+    ) {
       if (
-        ballX + ball.clientWidth >= paddleX &&
-        ballX < paddleX + paddle.clientWidth
+        ballX + ball.clientHeight >= paddleX &&
+        ballX <= paddleX + paddle.clientWidth
       ) {
         ballY = continarposition.height - position.height - ball.clientHeight;
         ballSpeedY = -ballSpeedY;
