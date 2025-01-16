@@ -74,11 +74,11 @@ function getRandomColor() {
 }
 
 function initGame() {
-  ballX = gameContainer.clientWidth / 2;
+  ballX = (gameContainer.clientWidth  - (ball.clientWidth /2 ))/ 2;
   ballY =
     gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
-  ballSpeedX = -2;
-  ballSpeedY = -2;
+  ballSpeedX = -4;
+  ballSpeedY = -4;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
   paddle.style.transform = `translate(${paddleX}px, 0px)`;
   beforstart = true;
