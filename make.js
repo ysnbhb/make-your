@@ -1,8 +1,11 @@
 import {
+  anon,
   debounce,
   DivstartGame,
   lose,
   Losemuen,
+  message,
+  message1,
   pauseMue,
   showmine,
   timeOut,
@@ -33,8 +36,8 @@ let beforstart = true;
 let totalStates = 0;
 let iswin = 0;
 const speedBD = 9;
-const brickRowCount = 5;
-const brickColumnCount = 7;
+const brickRowCount = 3;
+const brickColumnCount = 4;
 let bricks = [];
 let time = 90;
 
@@ -219,6 +222,8 @@ async function drawPaddle() {
   paddle.style.transform = `translate(${paddleX}px, 0px)`;
 }
 
+let firstCollision = true;
+
 async function collisionDetection() {
   if (paused) return;
   bricks.forEach((column) => {
@@ -264,6 +269,12 @@ async function collisionDetection() {
             lose(Win);
             paused = true;
           }
+          if (firstCollision) {
+            firstCollision = false;
+            paused = true;
+            beforstart = true;
+            anon(message);
+          }
           return;
         }
       }
@@ -285,6 +296,7 @@ function calculateFPS(now) {
   lastFrameTime = now;
 }
 
+let hitPaddleOnce = true;
 // Main Game Logic
 async function playGame() {
   const start = document.getElementById("start");
@@ -302,13 +314,20 @@ async function playGame() {
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
     if (
-      ballY + ball.clientHeight + ballSpeedY >=
-      continarposition.height - position.height
+      ballY + ball.clientHeight + ballSpeedY >
+      continarposition.height - position.height - 3
     ) {
       if (
         ballX + ball.clientHeight >= paddleX &&
         ballX <= paddleX + paddle.clientWidth
       ) {
+        if (hitPaddleOnce) {
+          hitPaddleOnce = false;
+          paused = true;
+          beforstart = true;
+          // await showHitPaddleStory();
+          anon(message1);
+        }
         ballY = continarposition.height - position.height - ball.clientHeight;
         ballSpeedY = -ballSpeedY;
 
