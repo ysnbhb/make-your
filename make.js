@@ -37,7 +37,7 @@ let totalStates = 0;
 let iswin = 0;
 const speedBD = 9;
 const brickRowCount = 3;
-const brickColumnCount = 4;
+const brickColumnCount = 7;
 let bricks = [];
 let time = 90;
 
