@@ -1,0 +1,212 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  margin: 0;
+  background-color: #c5c3c3;
+}
+
+#gameContainer {
+  position: relative;
+  width: calc(100% - 10px);
+  height: 500px;
+  background-color: #000;
+  border: 2px solid #030303;
+  overflow: hidden;
+  max-width: 680px;
+  /* filter: blur(8px); */
+  /* transition: filter 0.3s ease-in-out; */
+  transform: translate(0, 10px);
+}
+
+#paddle {
+  position: absolute;
+  bottom: 0px;
+  width: 20%;
+  height: 20px;
+  background-color: rgb(1, 1, 114);
+  border: 2px solid #3357ff;
+  border-radius: 10px;
+}
+
+#ball {
+  position: absolute;
+  width: 3%;
+  height: 4%;
+  background-color: #3357ff;
+  border-radius: 50%;
+}
+
+#bricksContainer {
+  position: absolute;
+  top: 30px;
+  left: 0;
+  width: 100%;
+  height: 240px;
+}
+
+#timer {
+  color: white;
+  position: absolute;
+  left: 50%;
+  top: calc(19% + 5px);
+  background: black;
+}
+
+.brick {
+  position: absolute;
+  width: 10%;
+  aspect-ratio: 2 / 1;
+}
+
+#score,
+#lives {
+  position: absolute;
+  top: 10px;
+  font-size: 16px;
+  color: #faf6f6;
+}
+
+#score {
+  left: 10px;
+}
+
+#lives {
+  right: 10px;
+}
+
+/* .PusedMine {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin: 50px auto;
+  background: black;
+  max-width: 600px;
+  height: auto;
+  padding: 20px;
+  border-radius: 10px;
+  color: #fff;
+  text-align: center;
+  transform: translate(2%, -20%);
+  } */
+  
+  .PusedMine {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    margin: 100px auto; 
+    background: #222;
+    max-width: 800px; 
+    height: auto;
+    padding: 30px; 
+    border-radius: 10px;
+    color: #fff;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.8);
+    z-index: 100; 
+  }
+  
+  
+  @media (max-width: 600px) {
+    .PusedMine {
+      width: 80%;
+    }
+  }
+
+.PusedMine h1 {
+  font-size: 3rem;
+  color: #f39c12;
+  text-shadow: 0 0 10px #f39c12, 0 0 20px #f39c12;
+}
+
+
+.PusedMine p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-top: 20px;
+  color: #e0e0e0;
+  text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.PusedMine .button-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.PusedMine button {
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  min-width: 120px;
+  text-align: center;
+}
+
+.PusedMine button:hover {
+  background-color: #0056b3;
+  transform: scale(1.1);
+}
+
+.PusedMine button:active {
+  background-color: #003f7f;
+  transform: scale(1.05);
+}
+
+@media (max-width: 600px) {
+  .PusedMine .button-container {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .PusedMine button {
+    width: 70%;
+    max-width: 300px;
+  }
+  .PusedMine {
+    width: 70%;
+  }
+}
+
+@media (max-width: 450px) {
+  #ball {
+    width: 4%;
+    height: 3%;
+  }
+  #paddle {
+    width: 30%;
+  }
+}
+
+@keyframes glowing {
+  0% { text-shadow: 0 0 5px #f39c12, 0 0 10px #f39c12, 0 0 20px #f39c12; }
+  50% { text-shadow: 0 0 10px #e67e22, 0 0 20px #e67e22, 0 0 30px #e67e22; }
+  100% { text-shadow: 0 0 5px #f39c12, 0 0 10px #f39c12, 0 0 20px #f39c12; }
+}
+
+h1, p {
+  animation: glowing 1.5s infinite alternate;
+}
