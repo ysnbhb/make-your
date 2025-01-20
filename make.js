@@ -8,7 +8,6 @@ import {
   message1,
   pauseMue,
   showmine,
-  timeOut,
   Win,
 } from "./global.js";
 
@@ -57,7 +56,7 @@ function showTime(timestamp) {
     divTime.innerText = `Time: ${minute}:${second}`;
     if (time === 0) {
       paused = true;
-      lose(timeOut);
+      lose(Losemuen);
       return;
     }
     time--;

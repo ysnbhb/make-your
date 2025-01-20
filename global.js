@@ -9,20 +9,17 @@ export const pauseMue = `
 `;
 
 export const Losemuen = `
-   <div>You Lose The Game | lives end</div>
-      <div class="button-container">
-        <button id="Restart">Restart</button>
-      </div>
-    <div>
+   <div>
+   <h1>Game Over</h1>
+   <p>You fought bravely, but the kingdom has fallen into darkness. The dark wizard's power now reigns supreme, casting a shadow over Valoran. 
+   Yet, even in the darkest times, there remains hope. Perhaps next time, with stronger resolve and sharper strategies, you can bring light back to the land.</p>
+</div>
+<div class="button-container">
+   <button id="Restart">Try Again</button>
+</div>
+
 `;
 
-export const timeOut = `
-   <div>You Lose The Game | Time out</div>
-      <div class="button-container">
-        <button id="Restart">Restart</button>
-      </div>
-    <div>
-`;
 
 export const DivstartGame = `
   <div class="button-container">
