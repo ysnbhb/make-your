@@ -25,8 +25,13 @@ export const timeOut = `
 `;
 
 export const DivstartGame = `
-  <div class="button-container">
-        <button id="start" >Start</button>
+  <div class="start-menu">
+    <h2>Select Difficulty</h2>
+    <div class="button-container">
+      <button id="easyBtn" class="difficulty-btn">Easy</button>
+      <button id="mediumBtn" class="difficulty-btn">Medium</button>
+      <button id="hardBtn" class="difficulty-btn">Hard</button>
+    </div>
   </div>
 `;
 
