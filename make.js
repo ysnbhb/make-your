@@ -68,6 +68,8 @@ window.addEventListener(
   }, 200)
 );
 
+
+
 function getRandomColor() {
   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
   return colors[Math.floor(Math.random() * colors.length)];
