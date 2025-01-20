@@ -68,8 +68,6 @@ window.addEventListener(
   }, 200)
 );
 
-
-
 function getRandomColor() {
   const colors = ["#FF0000", "#0000FF", "#FFFF00", "#00FF00"];
   return colors[Math.floor(Math.random() * colors.length)];
@@ -113,7 +111,8 @@ async function createBricks() {
         r *
         (bricksContainer.clientHeight * 0.1 + bricksContainer.clientWidth / 20);
       brick.style.transform = `translate(${x}px, ${y}px)`;
-      brick.style.backgroundColor = getRandomColor();
+      const color = getRandomColor();
+      brick.style.backgroundColor = color;
       bricksContainer.appendChild(brick);
       const status = 1;
       totalStates += status;
@@ -273,15 +272,8 @@ async function collisionDetection() {
   });
 }
 
-const fpsDisplay = document.createElement("div");
-fpsDisplay.style.position = "fixed";
-fpsDisplay.style.top = "10px";
-fpsDisplay.style.right = "10px";
-fpsDisplay.style.color = "white";
-fpsDisplay.style.background = "black";
-fpsDisplay.style.padding = "5px";
-fpsDisplay.style.fontFamily = "Arial";
-document.body.appendChild(fpsDisplay);
+const fpsDisplay = document.getElementById("fps");
+
 let lastFrameTime = performance.now();
 let fps = 0;
 
@@ -337,7 +329,10 @@ async function playGame() {
     }
 
     // Paddle Movement
-    if (rightPressed && paddleX + position.width < continarposition.width - 2)
+    if (
+      rightPressed &&
+      paddleX + position.width + speedBD <= continarposition.width
+    )
       paddleX += speedBD;
     if (leftPressed && paddleX > 1) paddleX -= speedBD;
   } else if (beforstart && !start) {
@@ -363,4 +358,4 @@ console.log(ballX, ballY);
 
 createBricks();
 Start();
-requestAnimationFrame(update);
+update();

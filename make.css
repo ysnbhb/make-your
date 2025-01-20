@@ -23,7 +23,7 @@ body {
   background: linear-gradient(to bottom, #111, #222);
   border: 3px solid #444;
   overflow: hidden;
-  max-width: 680px;
+  max-width: 760px;
   transform: translate(0, 10px);
   border-radius: 10px;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
@@ -69,6 +69,16 @@ body {
   width: 100%;
 }
 
+#fps {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  color: wheat;
+  background-color: black;
+  padding: 5px;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
 /* Bricks Container */
 #bricksContainer {
   position: absolute;
@@ -83,9 +93,10 @@ body {
 .brick {
   position: absolute;
   width: 10%;
-  aspect-ratio: 2 / 1;
-  background: linear-gradient(to right, #ff6a00, #f0e130);
-  border: 1px solid #e0a700;
+  /* aspect-ratio: 20px; */
+  height: 20px;
+  /* background: linear-gradient(to right, #ff6a00, #f0e130); */
+  /* border: 1px solid #e0a700; */
   border-radius: 5px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
