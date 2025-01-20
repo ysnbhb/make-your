@@ -33,12 +33,13 @@ let lives = 3;
 let paused = true;
 let beforstart = true;
 let totalStates = 0;
-let iswin = 0;
 const speedBD = 9;
 const brickRowCount = 3;
 const brickColumnCount = 7;
 let bricks = [];
 let time = 90;
+
+let muesShow = true;
 
 let lastTimeUpdate = 0;
 
@@ -79,7 +80,7 @@ function initGame() {
   ballX = (gameContainer.clientWidth - ball.clientWidth / 2) / 2;
   ballY =
     gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
-  ballSpeedX = -3;
+  ballSpeedX = -1;
   ballSpeedY = -3;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
   paddle.style.transform = `translate(${paddleX}px, 0px)`;
@@ -90,6 +91,7 @@ function initGame() {
 function Start() {
   const start = document.getElementById("start");
   start.addEventListener("click", () => {
+    muesShow = false;
     const minue = document.getElementById("PusedMine");
     minue.style.display = "none";
     minue.innerHTML = "";
@@ -138,7 +140,6 @@ async function updateScoreAndLives() {
 
 // Handle Keyboard Input
 function handleKeyDown(e) {
-  const start = document.getElementById("start");
   if (e.key === "ArrowRight") {
     rightPressed = true;
   }
@@ -146,13 +147,14 @@ function handleKeyDown(e) {
     leftPressed = true;
   }
   if (e.key === " ") {
-    if (beforstart && !start) {
-      paused = !paused;
+    if (beforstart && !muesShow) {
+      paused = false;
       beforstart = false;
+      muesShow = false;
     }
   }
   if (e.key == "p" || e.key == "Escape") {
-    if (!beforstart && lives > 0 && time > 0 && iswin != totalStates) {
+    if (!beforstart && lives > 0 && time > 0 && score != totalStates) {
       paused = true;
       showmine(pauseMue);
     }
@@ -173,12 +175,15 @@ function MoveBeforStart() {
 export function Continue(minue) {
   const div = document.getElementById("Continue");
   div.addEventListener("click", () => {
+    muesShow = false;
     minue.style.display = "none";
     paused = false;
   });
 }
 
 export function RestartBtn(minue) {
+  muesShow = true;
+
   const div = document.getElementById("Restart");
   div.addEventListener("click", () => {
     Restart();
@@ -199,7 +204,6 @@ function Restart() {
     .padStart(2, "0");
   divTime.innerText = `Time: ${minute}:${second}`;
   totalStates = 0;
-  iswin = 0;
   updateScoreAndLives();
 }
 
@@ -263,8 +267,8 @@ async function collisionDetection() {
           if (brick.status == 0) {
             brick.element.remove();
           }
-          iswin++;
-          if (iswin == totalStates) {
+
+          if (score == totalStates) {
             lose(Win);
             paused = true;
           }
@@ -272,6 +276,7 @@ async function collisionDetection() {
             firstCollision = false;
             paused = true;
             beforstart = true;
+            muesShow = true;
             anon(message);
           }
           return;
@@ -298,7 +303,6 @@ function calculateFPS(now) {
 let hitPaddleOnce = true;
 // Main Game Logic
 async function playGame() {
-  const start = document.getElementById("start");
   if (!paused) {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
@@ -324,6 +328,7 @@ async function playGame() {
           hitPaddleOnce = false;
           paused = true;
           beforstart = true;
+          muesShow = true;
           // await showHitPaddleStory();
           anon(message1);
         }
@@ -353,7 +358,7 @@ async function playGame() {
     )
       paddleX += speedBD;
     if (leftPressed && paddleX > 1) paddleX -= speedBD;
-  } else if (beforstart && !start) {
+  } else if (beforstart && !muesShow) {
     MoveBeforStart();
   }
 }

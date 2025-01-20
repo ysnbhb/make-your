@@ -20,7 +20,6 @@ export const Losemuen = `
 
 `;
 
-
 export const DivstartGame = `
   <div class="button-container">
         <button id="start" >Start</button>
@@ -41,12 +40,14 @@ export const Win = `
 export const message = `
   <div class="button-container">
   <p> A little ball that lived in the dark until it first touched the light. It felt warm and alive, discovered the beauty of hope and change, and began a new journey full of discoveries.</p>
+  <button id="Continue">Continue</button>
   </div>
 `;
 
 export const message1 = `
   <div class="button-container">
   <p> You, the brave player, are at the heart of this adventure. In your hands is the magic wand that controls the fate of the silver ball.</p>
+  <button id="Continue">Continue</button>
   </div>
 `;
 
@@ -70,20 +71,7 @@ export function anon(Losemuen) {
 
   minue.innerHTML = Losemuen;
   minue.style.display = "";
-
-  const continueButton = document.createElement("button");
-  continueButton.textContent = "Continue";
-  minue.appendChild(continueButton);
-
-  continueButton.addEventListener("click", () => {
-    minue.style.display = "none";
-  });
-
-  document.addEventListener("keydown", (event) => {
-    if (event.code === "Space") {
-      minue.style.display = "none";
-    }
-  });
+  Continue(minue);
 }
 
 export function debounce(func, wait) {
