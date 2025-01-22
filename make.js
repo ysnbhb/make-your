@@ -12,47 +12,45 @@ import {
 const gameMaps = {
   easy: {
     layout: [
-      [0,1,1,1,1,1,0],
-      [0,0,1,1,1,0,0],
-      [0,0,0,1,0,0,0]
+      [0, 1, 1, 1, 1, 1, 0],
+      [0, 0, 1, 1, 1, 0, 0],
+      [0, 0, 0, 1, 0, 0, 0],
     ],
-    colors: ['#32CD32', '#90EE90', '#98FB98'],
+    colors: ["#07523f", "#176954", "#27f2bf", "#4f8f7f"],
     status: 1,
     time: 90,
-    background: '#749478'
+    background: "#6aa899",
   },
   medium: {
     layout: [
-      [1,1,1,1,1,1,1],
-      [1,0,1,1,1,0,1],
-      [1,1,1,0,1,1,1],
-      [1,0,1,1,1,0,1],
-      [1,1,1,1,1,1,1]
+      [1, 1, 1, 1, 1, 1, 1],
+      [1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1],
     ],
-    colors: ['#FFD700', '#FFA500', '#FF8C00'],
+    colors: ["#fb9648", "#e7994c", "#d4661e", "#c94c42"],
     status: 1,
-    time: 120,
-    background: '#747474'
+    time: 90,
+    background: "#6a6262",
   },
   hard: {
     layout: [
-      [1,1,1,1,1,1,1],
-      [1,1,1,1,1,1,1],
-      [1,1,0,0,0,1,1],
-      [1,1,0,0,0,1,1],
-      [1,1,0,0,0,1,1],
-      [1,1,1,1,1,1,1]
+      [0, 1, 1, 1, 1, 1, 0],
+    [1, 0, 1, 1, 1, 0, 1],
+    [1, 1, 0, 0, 0, 1, 1],
+    [1, 1, 0, 0, 0, 1, 1],
+    [1, 0, 1, 1, 1, 0, 1],
+    [0, 1, 1, 1, 1, 1, 0],
     ],
-    colors: ['#FF0000', '#DC143C', '#B22222'],
+    colors: ["#6a040f", "#9d0208", "#d00000", "#dc2f02"],
     status: 2,
-    time: 120,
-    background: '#000000'
-  }
+    time: 90,
+    background: "#03071e",
+  },
 };
 
-let currentMap = 'medium';
-const MAX_ROWS = Math.max(...Object.values(gameMaps).map(map => map.layout.length));
-const MAX_COLS = Math.max(...Object.values(gameMaps).map(map => map.layout[0].length));
+let currentMap = "medium";
 
 // DOM Elements
 const ball = document.getElementById("ball");
@@ -88,7 +86,9 @@ function showTime(timestamp) {
   if (timestamp - lastTimeUpdate >= 1000) {
     lastTimeUpdate = timestamp;
     const second = (time % 60).toString().padStart(2, "0");
-    const minute = Math.floor(time / 60).toString().padStart(2, "0");
+    const minute = Math.floor(time / 60)
+      .toString()
+      .padStart(2, "0");
     divTime.innerText = `Time: ${minute}:${second}`;
     if (time === 0) {
       paused = true;
@@ -111,10 +111,11 @@ function getRandomColor(colors) {
 }
 
 function initGame() {
-  ballX = (gameContainer.clientWidth - (ball.clientWidth / 2)) / 2;
-  ballY = gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
-  ballSpeedX = -4;
-  ballSpeedY = -4;
+  ballX = (gameContainer.clientWidth - ball.clientWidth / 2) / 2;
+  ballY =
+    gameContainer.clientHeight - paddle.clientHeight - ball.clientHeight - 3;
+  ballSpeedX = -3;
+  ballSpeedY = -3;
   paddleX = (gameContainer.clientWidth - paddle.clientWidth) / 2;
   paddle.style.transform = `translate(${paddleX}px, 0px)`;
   beforstart = true;
@@ -126,14 +127,14 @@ function Start() {
   minue.innerHTML = DivstartGame;
   minue.style.display = "block";
 
-  document.querySelectorAll('.difficulty-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const difficulty = btn.id.replace('Btn', '').toLowerCase();
+  document.querySelectorAll(".difficulty-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const difficulty = btn.id.replace("Btn", "").toLowerCase();
       setMap(difficulty);
       minue.style.display = "none";
       minue.innerHTML = "";
-      paused = false;
-      beforstart = false;
+      paused = true;
+      beforstart = true;
     });
   });
 }
@@ -151,14 +152,12 @@ async function createBricks() {
   const map = gameMaps[currentMap];
   bricks = [];
   bricksContainer.innerHTML = "";
-  
-  totalStates = map.layout.reduce((total, row) => 
-    total + row.reduce((rowTotal, cell) => rowTotal + (cell ? 1 : 0), 0), 0) * map.status;
-  
-  const brickWidth = bricksContainer.clientWidth * 0.1;
-  const brickHeight = bricksContainer.clientHeight * 0.1;
-  const spacingX = bricksContainer.clientWidth / 20;
-  const spacingY = bricksContainer.clientWidth / 20;
+
+  totalStates = map.layout.reduce(
+    (total, row) =>
+      total + row.reduce((rowTotal, cell) => rowTotal + (cell ? 1 : 0), 0),
+    0
+  );
 
   for (let r = 0; r < map.layout.length; r++) {
     bricks[r] = [];
@@ -166,22 +165,25 @@ async function createBricks() {
       if (map.layout[r][c] === 1) {
         const brick = document.createElement("div");
         brick.classList.add("brick");
-        
-        const offsetX = (bricksContainer.clientWidth - (map.layout[r].length * (brickWidth + spacingX))) / 2;
-        const offsetY = (bricksContainer.clientHeight - (map.layout.length * (brickHeight + spacingY))) / 2;
-        
-        brick.style.left = (offsetX + c * (brickWidth + spacingX)) + "px";
-        brick.style.top = (offsetY + r * (brickHeight + spacingY)) + "px";
-        brick.style.width = brickWidth + "px";
-        brick.style.height = brickHeight + "px";
+
+        const x =
+          c *
+          (bricksContainer.clientWidth * 0.1 +
+            bricksContainer.clientWidth / 20);
+        const y =
+          r *
+          (bricksContainer.clientHeight * 0.1 +
+            bricksContainer.clientWidth / 20);
+        brick.style.transform = `translate(${x}px, ${y}px)`;
+
         brick.style.backgroundColor = getRandomColor(map.colors);
-        
+
         bricksContainer.appendChild(brick);
-        bricks[r][c] = { 
-          element: brick, 
-          status: map.status, 
+        bricks[r][c] = {
+          element: brick,
+          status: map.status,
           last: false,
-          react: brick.getBoundingClientRect()
+          react: brick.getBoundingClientRect(),
         };
       } else {
         bricks[r][c] = null;
@@ -263,7 +265,9 @@ function Restart() {
   score = 0;
   time = gameMaps[currentMap].time;
   const second = (time % 60).toString().padStart(2, "0");
-  const minute = Math.floor(time / 60).toString().padStart(2, "0");
+  const minute = Math.floor(time / 60)
+    .toString()
+    .padStart(2, "0");
   divTime.innerText = `Time: ${minute}:${second}`;
   iswin = 0;
   updateScoreAndLives();
@@ -290,10 +294,10 @@ async function collisionDetection() {
   bricks.forEach((row) => {
     row.forEach((brick) => {
       if (!brick || brick.status === 0) return;
-      
+
       const brickPosition = brick.react;
       const ballPosition = ball.getBoundingClientRect();
-      
+
       if (
         ballPosition.right >= brickPosition.left &&
         ballPosition.left <= brickPosition.right &&
@@ -301,7 +305,7 @@ async function collisionDetection() {
         ballPosition.top <= brickPosition.bottom
       ) {
         if (brick.last) return;
-        
+
         const overlapX = Math.min(
           ballPosition.right - brickPosition.left,
           brickPosition.right - ballPosition.left
@@ -316,18 +320,18 @@ async function collisionDetection() {
         } else {
           ballSpeedY = -ballSpeedY;
         }
-        
+
         brick.status -= 1;
         score++;
         ballSpeedX *= 1.01;
         ballSpeedY *= 1.01;
         brick.last = true;
-        
+
         if (brick.status === 0) {
           brick.element.style.display = "none";
           iswin++;
         }
-        
+
         if (iswin === totalStates) {
           lose(Win);
           paused = true;
@@ -363,7 +367,7 @@ async function playGame() {
   if (!paused) {
     ballX += ballSpeedX;
     ballY += ballSpeedY;
-    
+
     if (ballX <= 0 || ballX + ball.clientWidth >= continarposition.width) {
       if (ballX < 0) {
         ballX = 0;
@@ -373,7 +377,10 @@ async function playGame() {
       ballSpeedX = -ballSpeedX;
     }
     if (ballY <= 0) ballSpeedY = -ballSpeedY;
-    if (ballY + ball.clientHeight >= continarposition.height - position.height) {
+    if (
+      ballY + ball.clientHeight >=
+      continarposition.height - position.height
+    ) {
       if (
         ballX + ball.clientWidth >= paddleX &&
         ballX <= paddleX + paddle.clientWidth
