@@ -51,6 +51,14 @@ export const message1 = `
   </div>
 `;
 
+export const timeOut = `
+   <div>You Lose The Game | Time out</div>
+      <div class="button-container">
+        <button id="Restart">Restart</button>
+      </div>
+    <div>
+`;
+
 export function lose(Losemuen) {
   const minue = document.getElementById("PusedMine");
   minue.innerHTML = Losemuen;
