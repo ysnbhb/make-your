@@ -1,10 +1,11 @@
 import {
   debounce,
-  DivstartGame,
+  getStartGameHTML,
   lose,
   Losemuen,
   pauseMue,
   showmine,
+  showStory,
   timeOut,
   Win,
 } from "./global.js";
@@ -37,11 +38,11 @@ const gameMaps = {
   hard: {
     layout: [
       [0, 1, 1, 1, 1, 1, 0],
-    [1, 0, 1, 1, 1, 0, 1],
-    [1, 1, 0, 0, 0, 1, 1],
-    [1, 1, 0, 0, 0, 1, 1],
-    [1, 0, 1, 1, 1, 0, 1],
-    [0, 1, 1, 1, 1, 1, 0],
+      [1, 0, 1, 1, 1, 0, 1],
+      [1, 1, 0, 0, 0, 1, 1],
+      [1, 1, 0, 0, 0, 1, 1],
+      [1, 0, 1, 1, 1, 0, 1],
+      [0, 1, 1, 1, 1, 1, 0],
     ],
     colors: ["#6a040f", "#9d0208", "#d00000", "#dc2f02"],
     status: 2,
@@ -124,11 +125,13 @@ function initGame() {
 
 function Start() {
   const minue = document.getElementById("PusedMine");
-  minue.innerHTML = DivstartGame;
+  minue.innerHTML = getStartGameHTML();
   minue.style.display = "block";
+  console.log(showStory);
 
   document.querySelectorAll(".difficulty-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
+      showStory.story = false;
       const difficulty = btn.id.replace("Btn", "").toLowerCase();
       setMap(difficulty);
       minue.style.display = "none";
@@ -242,7 +245,7 @@ export function RestartBtn(minue) {
   const div = document.getElementById("Restart");
   div.addEventListener("click", () => {
     Restart();
-    minue.innerHTML = DivstartGame;
+    // minue.innerHTML = DivstartGame;
     Start();
   });
 }
